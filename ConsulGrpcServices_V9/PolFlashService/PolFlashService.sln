@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolFlashService", "PolFlashService.csproj", "{57910FC8-C991-4C4F-D185-27E6DE6A31F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Test|Any CPU = Test|Any CPU
+		Test|x64 = Test|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Debug|x64.ActiveCfg = Debug|x64
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Debug|x64.Build.0 = Debug|x64
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Release|x64.ActiveCfg = Release|x64
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Release|x64.Build.0 = Release|x64
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Test|Any CPU.Build.0 = Test|Any CPU
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Test|x64.ActiveCfg = Test|x64
+		{57910FC8-C991-4C4F-D185-27E6DE6A31F8}.Test|x64.Build.0 = Test|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2520A459-91EB-4C28-A9A5-09BFC9EB1836}
+	EndGlobalSection
+EndGlobal
