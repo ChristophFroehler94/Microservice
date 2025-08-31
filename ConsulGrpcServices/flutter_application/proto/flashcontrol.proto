@@ -1,0 +1,67 @@
+syntax = "proto3";
+option csharp_namespace = "FotoFinder.PolFlashGrpc";
+package polflash;
+
+import "google/protobuf/empty.proto";
+
+message TaskResult {
+  bool success = 1;
+  string message = 2;
+}
+
+message FlashStateResponse {
+  int32 state = 1;
+}
+
+message GetFlashCountResponse {
+  int32 count = 1;
+}
+
+message SetFlashEnergyRequest {
+  double percentageRight = 1;
+  double percentageLeft  = 2;
+}
+
+message SetPolarizationRequest {
+  enum PolarizationMode {
+    Unpolarized = 0;
+    Polarized   = 1;
+  }
+  PolarizationMode rightMode = 1;
+  PolarizationMode leftMode  = 2;
+}
+
+message LaserRequest {
+  bool isActive = 1;
+}
+
+message PolarizationModeResponse {
+  SetPolarizationRequest.PolarizationMode rightMode = 1;
+  SetPolarizationRequest.PolarizationMode leftMode  = 2;
+}
+
+message VersionResponse {
+  int32 major = 1;
+  int32 minor = 2;
+}
+
+message FlashEnergyResponse {
+  double percentageRight = 1;
+  double percentageLeft  = 2;
+}
+
+service FlashControl {
+  rpc Charge(google.protobuf.Empty)                returns (TaskResult);
+  rpc Discharge(google.protobuf.Empty)             returns (TaskResult);
+  rpc Trigger(google.protobuf.Empty)               returns (TaskResult);
+  rpc GetFlashState(google.protobuf.Empty)         returns (FlashStateResponse);
+  rpc GetFlashCount(google.protobuf.Empty)         returns (GetFlashCountResponse);
+  rpc SetFlashEnergy(SetFlashEnergyRequest)        returns (TaskResult);
+  rpc SetPolarization(SetPolarizationRequest)      returns (TaskResult);
+  rpc SetLaser(LaserRequest)                       returns (TaskResult);
+  rpc GetPolarizationMode(google.protobuf.Empty)   returns (PolarizationModeResponse);
+  rpc GetSoftwareVersion(google.protobuf.Empty)    returns (VersionResponse);
+  rpc GetHardwareVersion(google.protobuf.Empty)    returns (VersionResponse);
+  rpc GetFlashEnergy(google.protobuf.Empty)        returns (FlashEnergyResponse);
+  rpc GetStateMachine(google.protobuf.Empty)       returns (FlashStateResponse);
+}
