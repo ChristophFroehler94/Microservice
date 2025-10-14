@@ -1,9 +1,10 @@
+// lib/features/camera/camera_player.dart
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart'; // << für VoidCallback
+import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -12,50 +13,42 @@ import '../../shared/model/capture_profile.dart';
 import '../../shared/platform/windows_named_pipe_writer.dart';
 import '../../src/generated/camera.pbgrpc.dart';
 
-/// Kapselt Live-Wiedergabe (Named Pipe → media_kit) und TS-Mitschnitt.
 class CameraPlayer {
   CameraPlayer({
     required this.conn,
     required this.onLog,
-    this.onStateChanged, // << neu
+    this.onStateChanged,
   });
 
   final ConnectionService conn;
   final void Function(String msg) onLog;
-  final VoidCallback? onStateChanged; // << neu
+  final VoidCallback? onStateChanged;
 
-  void _notify() => onStateChanged?.call(); // << neu
+  void _notify() => onStateChanged?.call();
 
-  // media_kit Player/Controller
   Player? _player;
   VideoController? _controller;
 
-  // Stream-Subscriptions
   StreamSubscription<TsChunk>? _tsSaveSub;
   StreamSubscription<TsChunk>? _tsLiveSub;
 
-  // Datei-I/O
   IOSink? _tsSink;
   File? _tsFile;
 
-  // Named Pipe (Windows)
   static const String pipePath = r'\\.\pipe\medicam_ts';
   WindowsNamedPipeWriter? _pipe;
 
-  // Player-Tuning einmalig anwenden
   bool _tuned = false;
 
   VideoController? get controller => _controller;
   bool get isSaving => _tsSaveSub != null;
   bool get isLive => _tsLiveSub != null;
 
-  /// Initialisiert den Player (einmalig).
   Future<void> init() async {
     _player = Player();
     _controller = VideoController(_player!);
   }
 
-  /// Gibt Ressourcen frei.
   Future<void> dispose() async {
     try { await _tsSaveSub?.cancel(); } catch (_) {}
     try { await _tsLiveSub?.cancel(); } catch (_) {}
@@ -66,15 +59,15 @@ class CameraPlayer {
   }
 
   StreamH264Request _buildReq(CaptureProfile p) => StreamH264Request()
-    ..deviceId = p.deviceId
-    ..width = p.w
-    ..height = p.h
-    ..fps = p.fps
+    ..width   = p.w
+    ..height  = p.h
+    ..fps     = p.fps
     ..bitrate = p.bitrate;
 
   Future<void> _tunePlayer() async {
     if (_tuned || _player == null) return;
     final native = _player!.platform as NativePlayer;
+    // Niedrige Latenz für MPEG-TS (H.264)
     await native.command(['apply-profile', 'low-latency']);
     await native.setProperty('demuxer-lavf-format', 'mpegts');
     await native.setProperty('demuxer-lavf-buffersize', '16384');
@@ -89,7 +82,6 @@ class CameraPlayer {
     _tuned = true;
   }
 
-  // --------------------- TS in Datei speichern ----------------------------
   Future<void> startTsSave({required CaptureProfile profile}) async {
     final camera = conn.camera;
     if (camera == null || _tsSaveSub != null) return;
@@ -122,7 +114,7 @@ class CameraPlayer {
           _tsSink = null;
           _tsSaveSub = null;
           onLog('TS-Stream Fehler: $e');
-          _notify(); // << UI aktualisieren
+          _notify();
         },
         onDone: () async {
           try { await _tsSink?.flush(); } catch (_) {}
@@ -130,19 +122,19 @@ class CameraPlayer {
           _tsSink = null;
           _tsSaveSub = null;
           onLog('TS-Stream beendet. Datei: ${_tsFile?.path}');
-          _notify(); // << UI aktualisieren
+          _notify();
         },
         cancelOnError: true,
       );
 
       onLog('TS-Stream gestartet ➜ ${_tsFile!.path}');
-      _notify(); // << isSaving wurde true
+      _notify();
     } catch (e) {
       onLog('Start TS-Save Fehler: $e');
       try { await _tsSink?.close(); } catch (_) {}
       _tsSink = null;
       _tsSaveSub = null;
-      _notify(); // << falls kurzzeitig gestartet hat
+      _notify();
     }
   }
 
@@ -153,14 +145,13 @@ class CameraPlayer {
     try { await _tsSink?.close(); } catch (_) {}
     _tsSink = null;
     onLog('TS-Stream gestoppt. Datei: ${_tsFile?.path}');
-    _notify(); // << isSaving wurde false
+    _notify();
   }
 
   String _defaultTsPath() => Platform.isWindows
       ? 'C:\\capture\\stream_${DateTime.now().millisecondsSinceEpoch}.ts'
       : '/tmp/stream_${DateTime.now().millisecondsSinceEpoch}.ts';
 
-  // --------------------- Live-Playback ------------------------------------
   Future<void> startLive({required CaptureProfile profile}) async {
     final camera = conn.camera;
     if (camera == null || _tsLiveSub != null) return;
@@ -169,13 +160,8 @@ class CameraPlayer {
       await _tunePlayer();
       _pipe = WindowsNamedPipeWriter(pipePath);
 
-      // Pipe-Server verbinden (nicht blockierend awaiten)
       final connectFuture = _pipe!.connectAsync();
-
-      // Demuxer ist bereits in _tunePlayer() gesetzt
       await _player!.open(Media(pipePath), play: true);
-
-      // Sicherstellen, dass die Pipe verbunden ist, bevor wir Daten pumpen
       await connectFuture;
 
       final native = _player!.platform as NativePlayer;
@@ -191,22 +177,21 @@ class CameraPlayer {
         onError: (e) async {
           onLog('Live-Fehler: $e');
           await stopLive();
-          _notify(); // << isLive false
+          _notify();
         },
         onDone: () async {
           onLog('Live beendet');
           await stopLive();
-          _notify(); // << isLive false
+          _notify();
         },
         cancelOnError: true,
       );
 
       onLog('Live-Playback gestartet (${profile.w}x${profile.h}@${profile.fps}, ~${(profile.bitrate/1e6).toStringAsFixed(1)} Mbit/s).');
-      _notify(); // << isLive wurde true
+      _notify();
     } catch (e) {
       onLog('Start Live Fehler: $e');
       await stopLive();
-      // stopLive() ruft _notify() selbst
     }
   }
 
@@ -216,8 +201,8 @@ class CameraPlayer {
     try { await _player?.pause(); } catch (_) {}
     try { await _player?.stop(); } catch (_) {}
     try { _pipe?.close(); } catch (_) {}
-    _pipe = null; // Instanz bewusst freigeben
+    _pipe = null;
     onLog('Live-Playback gestoppt.');
-    _notify(); // << isLive wurde false
+    _notify();
   }
 }

@@ -92,9 +92,8 @@ if (-not (Test-Path -LiteralPath (Join-Path $BinDir "consul.exe"))) {
   Write-Host "Consul entpackt nach $BinDir und Temp-Ordner entfernt"
 }
 
-#region Vollständige Firewall-Regeln für Consul (nur Domain,Private)
-# Profile als einzelner String, nicht als Array, um Binding-Irritationen zu vermeiden
-$profileString = 'Domain,Private'
+#region Vollständige Firewall-Regeln (alle Profile)
+$profileString = 'Any'  # statt 'Domain,Private'
 
 $firewallRules = @(
   @{ Name = "Consul TCP 8300 (Server RPC)"; Protocol = "TCP"; Port = 8300 },
@@ -128,11 +127,11 @@ function Ensure-FirewallRule {
   }
 }
 
-# WICHTIG: Richtig splatten – über eine Variable, nicht @$_
 foreach ($rule in $firewallRules) {
   Ensure-FirewallRule @rule
 }
 #endregion
+
 
 
 #region Version 

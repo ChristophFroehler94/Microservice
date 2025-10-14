@@ -1,4 +1,4 @@
-// lib/app.dart
+// lib/app/app.dart
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -14,34 +14,28 @@ import '../shared/widgets/log_panel.dart';
 import '../features/camera/camera_page.dart' deferred as cam;
 import '../features/flash/flash_page.dart' deferred as fl;
 
-/// App-Shell: kapselt MaterialApp, Home & zentrale Services.
 class App extends StatefulWidget {
   const App({super.key});
-
   @override
   State<App> createState() => _AppState();
 }
 
 class _AppState extends State<App> {
-  // --- Keys für Snackbars & Dialoge (fix für "No ScaffoldMessenger") ---
   final _messengerKey = GlobalKey<ScaffoldMessengerState>();
   final _navKey = GlobalKey<NavigatorState>();
 
-  // --- Zentrale Services (nullbar, da asynchron initialisiert) ---
   ConnectionService? _conn;
   ConsulDiscovery? _discovery;
+_conn = ConnectionService
+  // TLS-Material
+  List<int>? _consulCaPem;
+  List<int>? _grpcServerCertPem; // Dev-Zertifikat des MedicamService
 
-  // Merke CA, um Discovery bei URL-Wechsel neu zu bauen
-  List<int>? _ca;
+  static const String kDefaultConsulUrl = 'https://192.168.178.48:8501';
 
-  // Standard-Consul-URL (nur HTTPS; kann in UI überschrieben werden)
- static const String kDefaultConsulUrl = 'https://10.10.4.22:8501';
-
-  // --- UI-State ---
   final _consulCtrl = TextEditingController(text: kDefaultConsulUrl);
   final _tagCtrl = TextEditingController(text: 'grpc');
 
-  // Profil-Voreinstellung
   final ValueNotifier<CaptureProfile> _profile =
       ValueNotifier<CaptureProfile>(CaptureProfile.fullHd);
 
@@ -59,17 +53,24 @@ class _AppState extends State<App> {
 
     () async {
       try {
-        // Deine Consul-Root-CA aus Assets laden (assets/consul-agent-ca.pem)
-        final data = await rootBundle.load('assets/consul-agent-ca.pem');
-        final ca = data.buffer.asUint8List();
-        if (ca.isEmpty) throw Exception('CA file is empty');
-        _ca = ca;
+        // 1) Consul-Root-CA pinnen
+        final caData = await rootBundle.load('assets/consul-agent-ca.pem');
+        _consulCaPem = caData.buffer.asUint8List();
 
-        // Erste Discovery/ConnectionService mit Default-URL erstellen
-        _discovery = ConsulDiscovery(_effectiveConsulUrl(), caPem: _ca!);
-        _conn = ConnectionService(caPem: _ca!, onLog: _appendLog);
+        // 2) gRPC-Serverzertifikat (Dev-Zertifikat) pinnen
+        final grpcData = await rootBundle.load('assets/medicam-dev-cert.pem');
+        _grpcServerCertPem = grpcData.buffer.asUint8List();
 
-        _logBuffer.append('Bereit (TLS aktiv).');
+        // 3) Services bauen
+        _discovery = ConsulDiscovery(_effectiveConsulUrl(), caPem: _consulCaPem!);
+        _conn = ConnectionService(
+          caPem: _consulCaPem!,                // nur für Consul-HTTPS
+          grpcCertPem: _grpcServerCertPem!,    // Dev-Zertifikat des MedicamService
+          authorityOverride: 'localhost',      // SNI/Authority -> passt zum Dev-Cert CN/SAN
+          onLog: _appendLog,
+        );
+
+        _logBuffer.append('TLS bereit: Consul(✅ CA) • gRPC(✅ Dev-Zertifikat, authority=localhost).');
       } catch (e) {
         _appendLog('TLS init failed: $e');
       } finally {
@@ -111,9 +112,7 @@ class _AppState extends State<App> {
     final raw = _consulCtrl.text.trim();
     final candidate = raw.isEmpty ? kDefaultConsulUrl : raw;
     final uri = Uri.tryParse(candidate);
-    final hasScheme = uri?.hasScheme ?? false;
-    // HTTPS erzwingen, wenn kein Schema
-    return hasScheme ? candidate : 'https://$candidate';
+    return (uri?.hasScheme ?? false) ? candidate : 'https://$candidate';
   }
 
   Future<T?> _showDlg<T>(Widget child) {
@@ -127,8 +126,8 @@ class _AppState extends State<App> {
   }
 
   Future<void> _browseAndConnect() async {
-    if (_ca == null) {
-      _snack('CA noch nicht geladen.');
+    if (_consulCaPem == null || _grpcServerCertPem == null) {
+      _snack('TLS-Material noch nicht geladen.');
       return;
     }
     if (_discovery == null || _conn == null) {
@@ -142,13 +141,14 @@ class _AppState extends State<App> {
       final url = _effectiveConsulUrl();
       if (_discovery!.base.toString() != url) {
         _discovery?.dispose();
-        _discovery = ConsulDiscovery(url, caPem: _ca!);
+        _discovery = ConsulDiscovery(url, caPem: _consulCaPem!);
         _appendLog('Consul-URL gesetzt auf: $url');
       }
 
       final tag = _tagCtrl.text.trim().isEmpty ? null : _tagCtrl.text.trim();
       _appendLog('Lade Services aus Consul …');
 
+      // /v1/catalog/services (optional lokal per Tag filtern) :contentReference[oaicite:2]{index=2}
       final services = await _discovery!.listServices(tag: tag);
       if (!mounted) return;
 
@@ -180,6 +180,8 @@ class _AppState extends State<App> {
       if (selectedService == null) return;
 
       _appendLog('Lade gesunde Instanzen für "$selectedService" …');
+
+      // /v1/health/service/<name>?passing (nur "passing" Instanzen) :contentReference[oaicite:3]{index=3}
       final instances = await _discovery!.listHealthyInstances(
         serviceName: selectedService,
         tag: tag,
@@ -220,13 +222,8 @@ class _AppState extends State<App> {
 
       if (inst == null) return;
 
-      // Verbindungsaufbau
-      await _conn!.connect(
-        instance: inst,
-        selectedServiceName: selectedService,
-      );
+      await _conn!.connect(instance: inst, selectedServiceName: selectedService);
 
-      // Feature-Modul lazy nachladen
       if (_conn!.kind == ServiceKind.camera) {
         await _ensureCameraLoaded();
       } else if (_conn!.kind == ServiceKind.polflash) {
@@ -257,7 +254,6 @@ class _AppState extends State<App> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Zeile: Consul-URL, Tag, Browse-Button
               Row(
                 children: [
                   SizedBox(
@@ -295,7 +291,6 @@ class _AppState extends State<App> {
               ),
               const SizedBox(height: 12),
 
-              // Statuszeile
               Row(
                 children: [
                   Expanded(
@@ -314,7 +309,6 @@ class _AppState extends State<App> {
               ),
               const SizedBox(height: 12),
 
-              // Profil-Auswahl
               Row(
                 children: [
                   const Text('Profil:'),
@@ -334,7 +328,6 @@ class _AppState extends State<App> {
               ),
               const SizedBox(height: 12),
 
-              // Feature-spezifische Seiten
               if (_conn?.kind == ServiceKind.camera)
                 Expanded(
                   flex: 3,
@@ -349,12 +342,7 @@ class _AppState extends State<App> {
                 const Expanded(flex: 3, child: SizedBox.shrink()),
 
               const SizedBox(height: 16),
-
-              // Log-Panel
-              Expanded(
-                flex: 2,
-                child: LogPanel(text: _logBuffer.notifier),
-              ),
+              Expanded(flex: 2, child: LogPanel(text: _logBuffer.notifier)),
             ],
           ),
         ),

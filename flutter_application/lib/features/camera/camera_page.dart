@@ -1,3 +1,4 @@
+// lib/features/camera/camera_page.dart
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -7,16 +8,12 @@ import '../../src/generated/camera.pbgrpc.dart';
 import '../../src/generated/google/protobuf/empty.pb.dart' as wkt;
 import 'camera_player.dart';
 
-/// Seite für Kamera-Steuerung und Video-Vorschau.
-///
-/// Die gRPC-Aufrufe sind klein und klar gehalten. Aufwändigere Logik (Streaming,
-/// Player, Speicherung) liegt in `CameraPlayer`.
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key, required this.conn, required this.log, required this.profile});
 
   final ConnectionService conn;
   final ValueNotifier<String> log;
-  final ValueNotifier<CaptureProfile> profile; // Dropdown-Auswahl aus der App-Shell
+  final ValueNotifier<CaptureProfile> profile;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -24,6 +21,7 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   late final CameraPlayer _player;
+  int _zoomPos = 0x2000; // Startwert in der Mitte
 
   @override
   void initState() {
@@ -31,14 +29,14 @@ class _CameraPageState extends State<CameraPage> {
     _player = CameraPlayer(
       conn: widget.conn,
       onLog: _appendLog,
-      onStateChanged: _onPlayerStateChange, // << neu: UI-Update bei Statewechsel
+      onStateChanged: _onPlayerStateChange,
     );
     _player.init();
   }
 
   void _onPlayerStateChange() {
     if (!mounted) return;
-    setState(() {}); // << Buttons werden neu ausgewertet
+    setState(() {});
   }
 
   @override
@@ -62,30 +60,13 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
-  Future<void> _zoomTele() async {
+  Future<void> _setZoomPosition() async {
     if (_client == null) return;
     try {
-      await _client!.zoom(
-        ZoomRequest()
-          ..variable = (ZoomRequest_SidedSpeed()
-            ..dir = ZoomRequest_SidedSpeed_Direction.TELE
-            ..speed = 3),
-      );
-      _appendLog('Zoom-Tele gesendet');
+      final rep = await _client!.zoom(ZoomRequest()..position = _zoomPos);
+      _appendLog('Zoom positioniert: ok=${rep.ok}');
     } catch (e) {
       _setLog('Zoom-Fehler: $e');
-    }
-  }
-
-  Future<void> _setFocusAuto() async {
-    if (_client == null) return;
-    try {
-      final rep = await _client!.setFocusMode(
-        SetFocusModeRequest()..mode = SetFocusModeRequest_Mode.AUTO,
-      );
-      _setLog('Focus AUTO: ok=${rep.ok}');
-    } catch (e) {
-      _setLog('Focus-Fehler: $e');
     }
   }
 
@@ -93,7 +74,8 @@ class _CameraPageState extends State<CameraPage> {
     if (_client == null) return;
     try {
       final st = await _client!.getStatus(wkt.Empty());
-      _setLog('Status: poweredOn=${st.poweredOn}, zoomPos=${st.zoomPos}, focusPos=${st.focusPos}');
+      _setLog('Status: poweredOn=${st.poweredOn}, zoomPos=${st.zoomPos}');
+      setState(() => _zoomPos = st.zoomPos);
     } catch (e) {
       _setLog('Status-Fehler: $e');
     }
@@ -105,7 +87,6 @@ class _CameraPageState extends State<CameraPage> {
 
     return Column(
       children: [
-        // Video-Preview
         if (_player.controller != null)
           Expanded(
             flex: 3,
@@ -116,14 +97,29 @@ class _CameraPageState extends State<CameraPage> {
           ),
         const SizedBox(height: 12),
 
-        // Steuerungs-Buttons
+        // Zoom-Slider (0x0000 .. 0x7AC0)
+        Row(
+          children: [
+            const Text('Zoom:'),
+            Expanded(
+              child: Slider(
+                value: _zoomPos.toDouble(),
+                min: 0,
+                max: 0x7AC0.toDouble(),
+                onChanged: (v) => setState(() => _zoomPos = v.round()),
+              ),
+            ),
+            Text('0x${_zoomPos.toRadixString(16).toUpperCase()}'),
+          ],
+        ),
+        const SizedBox(height: 8),
+
         Wrap(
           spacing: 12,
           runSpacing: 12,
           children: [
             ElevatedButton(onPressed: _client != null ? _powerOn : null, child: const Text('Power On')),
-            ElevatedButton(onPressed: _client != null ? _zoomTele : null, child: const Text('Zoom Tele')),
-            ElevatedButton(onPressed: _client != null ? _setFocusAuto : null, child: const Text('Focus AUTO')),
+            ElevatedButton(onPressed: _client != null ? _setZoomPosition : null, child: const Text('Set Zoom')),
             ElevatedButton(onPressed: _client != null ? _getStatus : null, child: const Text('Get Status')),
 
             // TS Save

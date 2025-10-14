@@ -1,3 +1,4 @@
+// lib/core/connection/connection_service.dart
 import 'dart:async';
 import 'package:grpc/grpc.dart';
 
@@ -9,17 +10,21 @@ import '../../core/grpc/grpc_channel.dart';
 import '../../src/generated/camera.pbgrpc.dart';
 import '../../src/generated/flashcontrol.pbgrpc.dart' as pol;
 
-/// Baut & hält die gRPC-Verbindung und stellt
-/// je nach Service die passenden Clients bereit.
 class ConnectionService {
   ConnectionService({
-    required List<int> caPem,
+    required List<int> caPem,                 // nur Consul
+    required List<int> grpcCertPem,          // Dev-Zertifikat MedicamService (PEM)
+    String authorityOverride = 'localhost',  // passt zu Dev-Zertifikat
     void Function(String msg)? onLog,
   })  : _onLog = onLog,
-        _caPem = caPem;
+        _consulCaPem = caPem,
+        _grpcCertPem = grpcCertPem,
+        _authority = authorityOverride;
 
   final void Function(String msg)? _onLog;
-  final List<int> _caPem;
+  final List<int> _consulCaPem;   // der Vollständigkeit halber aufbewahrt
+  final List<int> _grpcCertPem;
+  final String _authority;
 
   ClientChannel? _channel;
   ServiceKind? _kind;
@@ -47,11 +52,11 @@ class ConnectionService {
     final channel = GrpcChannelFactory.secure(
       instance.host,
       instance.port,
-      caPem: _caPem,
-      // authority: 'optional.example.internal', // nur falls nötig
+      serverCertPem: _grpcCertPem,     // Zertifikatspinning
+      authority: _authority,           // HTTP/2 :authority + TLS SNI auf "localhost"
     );
 
-    final name = (selectedServiceName).toLowerCase();
+    final name = selectedServiceName.toLowerCase();
     final tagsLower = instance.tags.map((t) => t.toLowerCase()).toList();
     final isPolFlash = tagsLower.contains('svc:polflash') || name.contains('polflash');
 
