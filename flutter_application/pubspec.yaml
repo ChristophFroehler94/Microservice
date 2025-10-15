@@ -34,4 +34,4 @@ dev_dependencies:
 flutter:
   assets:
     - assets/consul-agent-ca.pem
-    - assets/medicam-dev-cert.pem
+    - assets/consul-srv-1-dev.pem

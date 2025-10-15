@@ -21,7 +21,7 @@ import 'google/protobuf/empty.pb.dart' as $1;
 
 export 'camera.pb.dart';
 
-/// Service definition for camera control and H.264 streaming
+/// Service zur Kamerasteuerung und H.264-Streaming
 @$pb.GrpcServiceName('camera.v1.CameraService')
 class CameraServiceClient extends $grpc.Client {
   /// The hostname for this service.
@@ -34,7 +34,6 @@ class CameraServiceClient extends $grpc.Client {
 
   CameraServiceClient(super.channel, {super.options, super.interceptors});
 
-  /// Kamera-Steuerung (VISCA)
   $grpc.ResponseFuture<$0.StatusReply> power(
     $0.PowerRequest request, {
     $grpc.CallOptions? options,
@@ -47,20 +46,6 @@ class CameraServiceClient extends $grpc.Client {
     $grpc.CallOptions? options,
   }) {
     return $createUnaryCall(_$zoom, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.StatusReply> setFocusMode(
-    $0.SetFocusModeRequest request, {
-    $grpc.CallOptions? options,
-  }) {
-    return $createUnaryCall(_$setFocusMode, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.StatusReply> setFocusPosition(
-    $0.SetFocusPositionRequest request, {
-    $grpc.CallOptions? options,
-  }) {
-    return $createUnaryCall(_$setFocusPosition, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.CameraStatus> getStatus(
@@ -96,16 +81,6 @@ class CameraServiceClient extends $grpc.Client {
       '/camera.v1.CameraService/Zoom',
       ($0.ZoomRequest value) => value.writeToBuffer(),
       $0.StatusReply.fromBuffer);
-  static final _$setFocusMode =
-      $grpc.ClientMethod<$0.SetFocusModeRequest, $0.StatusReply>(
-          '/camera.v1.CameraService/SetFocusMode',
-          ($0.SetFocusModeRequest value) => value.writeToBuffer(),
-          $0.StatusReply.fromBuffer);
-  static final _$setFocusPosition =
-      $grpc.ClientMethod<$0.SetFocusPositionRequest, $0.StatusReply>(
-          '/camera.v1.CameraService/SetFocusPosition',
-          ($0.SetFocusPositionRequest value) => value.writeToBuffer(),
-          $0.StatusReply.fromBuffer);
   static final _$getStatus = $grpc.ClientMethod<$1.Empty, $0.CameraStatus>(
       '/camera.v1.CameraService/GetStatus',
       ($1.Empty value) => value.writeToBuffer(),
@@ -140,22 +115,6 @@ abstract class CameraServiceBase extends $grpc.Service {
         false,
         false,
         ($core.List<$core.int> value) => $0.ZoomRequest.fromBuffer(value),
-        ($0.StatusReply value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.SetFocusModeRequest, $0.StatusReply>(
-        'SetFocusMode',
-        setFocusMode_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.SetFocusModeRequest.fromBuffer(value),
-        ($0.StatusReply value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.SetFocusPositionRequest, $0.StatusReply>(
-        'SetFocusPosition',
-        setFocusPosition_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.SetFocusPositionRequest.fromBuffer(value),
         ($0.StatusReply value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$1.Empty, $0.CameraStatus>(
         'GetStatus',
@@ -195,22 +154,6 @@ abstract class CameraServiceBase extends $grpc.Service {
 
   $async.Future<$0.StatusReply> zoom(
       $grpc.ServiceCall call, $0.ZoomRequest request);
-
-  $async.Future<$0.StatusReply> setFocusMode_Pre($grpc.ServiceCall $call,
-      $async.Future<$0.SetFocusModeRequest> $request) async {
-    return setFocusMode($call, await $request);
-  }
-
-  $async.Future<$0.StatusReply> setFocusMode(
-      $grpc.ServiceCall call, $0.SetFocusModeRequest request);
-
-  $async.Future<$0.StatusReply> setFocusPosition_Pre($grpc.ServiceCall $call,
-      $async.Future<$0.SetFocusPositionRequest> $request) async {
-    return setFocusPosition($call, await $request);
-  }
-
-  $async.Future<$0.StatusReply> setFocusPosition(
-      $grpc.ServiceCall call, $0.SetFocusPositionRequest request);
 
   $async.Future<$0.CameraStatus> getStatus_Pre(
       $grpc.ServiceCall $call, $async.Future<$1.Empty> $request) async {

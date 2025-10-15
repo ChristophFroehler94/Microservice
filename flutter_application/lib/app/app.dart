@@ -26,7 +26,7 @@ class _AppState extends State<App> {
 
   ConnectionService? _conn;
   ConsulDiscovery? _discovery;
-_conn = ConnectionService
+ _conn = ConnectionService
   // TLS-Material
   List<int>? _consulCaPem;
   List<int>? _grpcServerCertPem; // Dev-Zertifikat des MedicamService
