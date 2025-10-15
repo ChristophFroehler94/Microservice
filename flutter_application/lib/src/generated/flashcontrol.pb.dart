@@ -49,7 +49,7 @@ class TaskResult extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  TaskResult clone() => TaskResult()..mergeFromMessage(this);
+  TaskResult clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   TaskResult copyWith(void Function(TaskResult) updates) =>
       super.copyWith((message) => updates(message as TaskResult)) as TaskResult;
@@ -108,11 +108,11 @@ class FlashStateResponse extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'FlashStateResponse',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'polflash'),
       createEmptyInstance: create)
-    ..a<$core.int>(1, _omitFieldNames ? '' : 'state', $pb.PbFieldType.O3)
+    ..aI(1, _omitFieldNames ? '' : 'state')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  FlashStateResponse clone() => FlashStateResponse()..mergeFromMessage(this);
+  FlashStateResponse clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   FlashStateResponse copyWith(void Function(FlashStateResponse) updates) =>
       super.copyWith((message) => updates(message as FlashStateResponse))
@@ -164,12 +164,11 @@ class GetFlashCountResponse extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'GetFlashCountResponse',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'polflash'),
       createEmptyInstance: create)
-    ..a<$core.int>(1, _omitFieldNames ? '' : 'count', $pb.PbFieldType.O3)
+    ..aI(1, _omitFieldNames ? '' : 'count')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  GetFlashCountResponse clone() =>
-      GetFlashCountResponse()..mergeFromMessage(this);
+  GetFlashCountResponse clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   GetFlashCountResponse copyWith(
           void Function(GetFlashCountResponse) updates) =>
@@ -224,17 +223,14 @@ class SetFlashEnergyRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'SetFlashEnergyRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'polflash'),
       createEmptyInstance: create)
-    ..a<$core.double>(
-        1, _omitFieldNames ? '' : 'percentageRight', $pb.PbFieldType.OD,
+    ..aD(1, _omitFieldNames ? '' : 'percentageRight',
         protoName: 'percentageRight')
-    ..a<$core.double>(
-        2, _omitFieldNames ? '' : 'percentageLeft', $pb.PbFieldType.OD,
+    ..aD(2, _omitFieldNames ? '' : 'percentageLeft',
         protoName: 'percentageLeft')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  SetFlashEnergyRequest clone() =>
-      SetFlashEnergyRequest()..mergeFromMessage(this);
+  SetFlashEnergyRequest clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   SetFlashEnergyRequest copyWith(
           void Function(SetFlashEnergyRequest) updates) =>
@@ -298,23 +294,18 @@ class SetPolarizationRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'SetPolarizationRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'polflash'),
       createEmptyInstance: create)
-    ..e<SetPolarizationRequest_PolarizationMode>(
-        1, _omitFieldNames ? '' : 'rightMode', $pb.PbFieldType.OE,
+    ..aE<SetPolarizationRequest_PolarizationMode>(
+        1, _omitFieldNames ? '' : 'rightMode',
         protoName: 'rightMode',
-        defaultOrMaker: SetPolarizationRequest_PolarizationMode.Unpolarized,
-        valueOf: SetPolarizationRequest_PolarizationMode.valueOf,
         enumValues: SetPolarizationRequest_PolarizationMode.values)
-    ..e<SetPolarizationRequest_PolarizationMode>(
-        2, _omitFieldNames ? '' : 'leftMode', $pb.PbFieldType.OE,
+    ..aE<SetPolarizationRequest_PolarizationMode>(
+        2, _omitFieldNames ? '' : 'leftMode',
         protoName: 'leftMode',
-        defaultOrMaker: SetPolarizationRequest_PolarizationMode.Unpolarized,
-        valueOf: SetPolarizationRequest_PolarizationMode.valueOf,
         enumValues: SetPolarizationRequest_PolarizationMode.values)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  SetPolarizationRequest clone() =>
-      SetPolarizationRequest()..mergeFromMessage(this);
+  SetPolarizationRequest clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   SetPolarizationRequest copyWith(
           void Function(SetPolarizationRequest) updates) =>
@@ -382,7 +373,7 @@ class LaserRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  LaserRequest clone() => LaserRequest()..mergeFromMessage(this);
+  LaserRequest clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   LaserRequest copyWith(void Function(LaserRequest) updates) =>
       super.copyWith((message) => updates(message as LaserRequest))
@@ -436,23 +427,18 @@ class PolarizationModeResponse extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'PolarizationModeResponse',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'polflash'),
       createEmptyInstance: create)
-    ..e<SetPolarizationRequest_PolarizationMode>(
-        1, _omitFieldNames ? '' : 'rightMode', $pb.PbFieldType.OE,
+    ..aE<SetPolarizationRequest_PolarizationMode>(
+        1, _omitFieldNames ? '' : 'rightMode',
         protoName: 'rightMode',
-        defaultOrMaker: SetPolarizationRequest_PolarizationMode.Unpolarized,
-        valueOf: SetPolarizationRequest_PolarizationMode.valueOf,
         enumValues: SetPolarizationRequest_PolarizationMode.values)
-    ..e<SetPolarizationRequest_PolarizationMode>(
-        2, _omitFieldNames ? '' : 'leftMode', $pb.PbFieldType.OE,
+    ..aE<SetPolarizationRequest_PolarizationMode>(
+        2, _omitFieldNames ? '' : 'leftMode',
         protoName: 'leftMode',
-        defaultOrMaker: SetPolarizationRequest_PolarizationMode.Unpolarized,
-        valueOf: SetPolarizationRequest_PolarizationMode.valueOf,
         enumValues: SetPolarizationRequest_PolarizationMode.values)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  PolarizationModeResponse clone() =>
-      PolarizationModeResponse()..mergeFromMessage(this);
+  PolarizationModeResponse clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   PolarizationModeResponse copyWith(
           void Function(PolarizationModeResponse) updates) =>
@@ -518,12 +504,12 @@ class VersionResponse extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'VersionResponse',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'polflash'),
       createEmptyInstance: create)
-    ..a<$core.int>(1, _omitFieldNames ? '' : 'major', $pb.PbFieldType.O3)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'minor', $pb.PbFieldType.O3)
+    ..aI(1, _omitFieldNames ? '' : 'major')
+    ..aI(2, _omitFieldNames ? '' : 'minor')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  VersionResponse clone() => VersionResponse()..mergeFromMessage(this);
+  VersionResponse clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   VersionResponse copyWith(void Function(VersionResponse) updates) =>
       super.copyWith((message) => updates(message as VersionResponse))
@@ -586,16 +572,14 @@ class FlashEnergyResponse extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'FlashEnergyResponse',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'polflash'),
       createEmptyInstance: create)
-    ..a<$core.double>(
-        1, _omitFieldNames ? '' : 'percentageRight', $pb.PbFieldType.OD,
+    ..aD(1, _omitFieldNames ? '' : 'percentageRight',
         protoName: 'percentageRight')
-    ..a<$core.double>(
-        2, _omitFieldNames ? '' : 'percentageLeft', $pb.PbFieldType.OD,
+    ..aD(2, _omitFieldNames ? '' : 'percentageLeft',
         protoName: 'percentageLeft')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  FlashEnergyResponse clone() => FlashEnergyResponse()..mergeFromMessage(this);
+  FlashEnergyResponse clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   FlashEnergyResponse copyWith(void Function(FlashEnergyResponse) updates) =>
       super.copyWith((message) => updates(message as FlashEnergyResponse))

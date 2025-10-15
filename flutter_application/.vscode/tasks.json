@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "proto:gen (Dart gRPC)",
+      "type": "shell",
+      "command": "protoc",
+      "args": [
+        "-I", "proto",
+        "--dart_out=grpc:lib/src/generated",
+        "proto/camera.proto",
+        "proto/flashcontrol.proto"
+      ],
+      "options": {
+        "env": {
+          // sorgt dafür, dass protoc das Dart-Plugin findet (Windows):
+          "PATH": "${env:PATH};${env:LOCALAPPDATA}\\Pub\\Cache\\bin"
+        }
+      },
+      "problemMatcher": []
+    }
+  ]
+}
