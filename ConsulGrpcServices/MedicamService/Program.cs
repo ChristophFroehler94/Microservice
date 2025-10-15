@@ -1,60 +1,44 @@
-using Camera.Grpc.Service;
+ï»¿using Camera.Grpc.Service;
 using Consul;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Primitives;
+// NEW usings for TLS handling
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using Winton.Extensions.Configuration.Consul;
+
+const int GrpcPort = 5294;
+const string ServiceName = "CameraService";
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = args });
 
 // ------------------------------------------------------------
-// 1) Konfigquellen: ENV (Standard), Args – KEIN appsettings.*
+// 1) Konfigquellen: ENV + Args + Consul KV (KEIN appsettings.*)
 // ------------------------------------------------------------
 builder.Configuration.Sources.Clear();
-builder.Configuration.AddEnvironmentVariables(prefix: "APP_"); // optional
+builder.Configuration.AddEnvironmentVariables(prefix: "APP_");
 builder.Configuration.AddCommandLine(args);
 
-// ---- Standard-ENV (HashiCorp Consul) ----
-// Doku: CONSUL_HTTP_ADDR / _TOKEN / _CACERT / _CAPATH
+// Konsul-Bootstrap aus ENV
 string consulAddr = Environment.GetEnvironmentVariable("CONSUL_HTTP_ADDR") ?? "https://127.0.0.1:8501";
-string? consulToken = Environment.GetEnvironmentVariable("CONSUL_HTTP_TOKEN");
-string? cacert = Environment.GetEnvironmentVariable("CONSUL_CACERT");
-string? capath = Environment.GetEnvironmentVariable("CONSUL_CAPATH");
-var consulRoots = LoadRootCAsFromEnv(cacert, capath);
-
-var rootCount = consulRoots?.Count ?? 0;
-Console.WriteLine($"[TLS] Loaded {rootCount} root CA(s) from {(cacert ?? capath ?? "(none)")}");
-
-// ---- KV-Key exakt wie im Skript geseeded ----
-// camera/<NodeName>/config.json  (NodeName kommt aus Skript via CONSUL_NODENAME)
 string node = Environment.GetEnvironmentVariable("CONSUL_NODENAME") ?? Environment.MachineName;
 string servicePrefix = Environment.GetEnvironmentVariable("SERVICE_PREFIX") ?? "camera";
 string kvPath = Environment.GetEnvironmentVariable("CONSUL_KVPATH") ?? $"{servicePrefix}/{node}/config.json";
 
-
-
-// ------------------------------------------------------------
-// 2) Consul-KV als Konfigquelle (Winton) + TLS-Validierung
-// ------------------------------------------------------------
+// Minimal: nur Service.AdvertisedHost aus KV
 builder.Configuration.AddConsul(
     kvPath,
     options =>
     {
-        options.ConsulConfigurationOptions = cco =>
-        {
-            cco.Address = new Uri(consulAddr);
-            if (!string.IsNullOrWhiteSpace(consulToken))
-                cco.Token = consulToken;
-        };
+        options.ConsulConfigurationOptions = cco => { cco.Address = new Uri(consulAddr); };
 
-        if (consulRoots is not null)
+        // DEV ONLY: Consul-Agent nutzt eigene CA/Zerts. FÃ¼r DEV ohne Root-Import:
+        options.ConsulHttpClientHandlerOptions = h =>
         {
-            options.ConsulHttpClientHandlerOptions = handler =>
-            {
-                handler.ServerCertificateCustomValidationCallback =
-                    (req, cert, chain, errs) => ValidateWithCustomRoots(cert, consulRoots);
-            };
-        }
+            h.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator; // DEV!
+        };
 
         options.Optional = false;
         options.ReloadOnChange = true;
@@ -63,15 +47,39 @@ builder.Configuration.AddConsul(
     });
 
 // ------------------------------------------------------------
-// 3) Kestrel dynamisch aus "Kestrel"-Section (inkl. PEM Path/KeyPath)
+// 2) Kestrel: fester Port + HTTPS mit Dev-Zertifikat (PFX aus ENV)
 // ------------------------------------------------------------
-builder.WebHost.ConfigureKestrel((context, kestrel) =>
+var tlsPfxPath = Environment.GetEnvironmentVariable("APP_TLS_PFX");
+var tlsPfxPwd = Environment.GetEnvironmentVariable("APP_TLS_PFX_PASSWORD");
+
+X509Certificate2? serverCert = null;
+if (!string.IsNullOrWhiteSpace(tlsPfxPath) && File.Exists(tlsPfxPath))
 {
-    kestrel.Configure(context.Configuration.GetSection("Kestrel"), reloadOnChange: true);
+    // MachineKeySet damit auch als Dienst nutzbar; Exportable nur fÃ¼r Dev-Tests
+    serverCert = new X509Certificate2(
+        tlsPfxPath,
+        tlsPfxPwd ?? string.Empty,
+        X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
+}
+
+builder.WebHost.ConfigureKestrel(kestrel =>
+{
+    kestrel.ListenAnyIP(GrpcPort, listen =>
+    {
+        listen.Protocols = HttpProtocols.Http2; // gRPC benÃ¶tigt HTTP/2
+        if (serverCert is not null)
+        {
+            listen.UseHttps(serverCert); // explizites Dev-PFX
+        }
+        else
+        {
+            listen.UseHttps(); // Fallback: lokales Dev-Zertifikat
+        }
+    });
 });
 
 // ------------------------------------------------------------
-// 4) Logging / gRPC / Health
+// 3) Logging / gRPC / Health
 // ------------------------------------------------------------
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -82,84 +90,70 @@ builder.Services.AddGrpcReflection();
 builder.Services.AddGrpcHealthChecks().AddCheck("camera-v1", () => HealthCheckResult.Healthy());
 
 // ------------------------------------------------------------
-// 5) Optionen & DI (Visca initial; kein Reconfigure-Aufruf nötig)
+// 4) DI: Options + Visca (FTDI auto) + VideoStreamer
 // ------------------------------------------------------------
-builder.Services.Configure<ViscaOptions>(builder.Configuration.GetSection("Visca"));
-builder.Services.AddSingleton<ViscaController>(sp =>
+builder.Services.AddOptions<VideoOptions>();
+
+builder.Services.AddSingleton<ViscaController>(_ =>
 {
-    var cfg = sp.GetRequiredService<IConfiguration>();
-    var port = cfg["Visca:Port"] ?? "COM5";
-    var baud = int.TryParse(cfg["Visca:Baud"], out var b) ? b : 9600;
+    int baud = 9600;  // feste Baudrate fÃ¼r Prototyp
+    string? auto = AutoDetectFtdiComPort();
+    string port = !string.IsNullOrWhiteSpace(auto) ? auto : "COM5"; // Fallback
+    Console.WriteLine($"[VISCA] Port={port} baud={baud} {(auto is not null ? "[auto-FTDI]" : "[fallback]")}");
     return new ViscaController(port, baud, deviceAddress: 1);
 });
+
 builder.Services.AddSingleton<FfmpegCoreVideoStream>();
 
 // ------------------------------------------------------------
-// 6) Consul-Client (TLS-Validation optional über Root-CAs)
+// 5) Consul-Client (DEV: Zertvalidierung gelockert; Consul nutzt eigene Zerts)
 // ------------------------------------------------------------
 builder.Services.AddSingleton<IConsulClient>(_ =>
 {
     return new ConsulClient(
-        configOverride: c =>
+        configOverride: c => { c.Address = new Uri(consulAddr); },
+        clientOverride: _ => { },
+        handlerOverride: h =>
         {
-            // Falls in KV überschrieben, sonst Bootstrap-ENV
-            c.Address = new Uri(builder.Configuration["Consul:Address"] ?? consulAddr);
-            var token = builder.Configuration["Consul:Token"] ?? consulToken;
-            if (!string.IsNullOrWhiteSpace(token)) c.Token = token;
-        },
-        clientOverride: client =>
-        {
-            // z.B. Timeouts setzen, falls gewünscht:
-            // client.Timeout = TimeSpan.FromMinutes(2);
-        },
-        handlerOverride: handler =>
-        {
-            if (consulRoots is not null)
-            {
-                handler.ServerCertificateCustomValidationCallback =
-                    (req, cert, chain, errs) => ValidateWithCustomRoots(cert, consulRoots);
-            }
+            // DEV ONLY: akzeptiere Consul-Agent-Zertifikate ohne Root-Import
+            h.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         });
 });
 
 // ------------------------------------------------------------
-// 7) App-Endpunkte
+// 6) App-Endpunkte
 // ------------------------------------------------------------
 var app = builder.Build();
 
 app.MapGrpcService<CameraServiceImpl>();
 app.MapGrpcHealthChecksService();
 app.MapGrpcReflectionService();
-app.MapGet("/", () => "Camera Service gRPC running…");
+app.MapGet("/", () => "Camera Service gRPC runningâ€¦");
 
 // ------------------------------------------------------------
-// 8) Consul-Registrierung aus KV
+// 7) Consul-Registrierung (nur AdvertisedHost aus KV)
 // ------------------------------------------------------------
 var cfg = app.Configuration;
 var consul = app.Services.GetRequiredService<IConsulClient>();
 var lifetime = app.Lifetime;
 
-var grpcUrl = cfg["Kestrel:Endpoints:Grpc:Url"] ?? "https://0.0.0.0:5294";
-var uri = new Uri(grpcUrl);
-
-var serviceAddress = cfg["Service:AdvertisedHost"] ?? "127.0.0.1";
-var servicePort = uri.Port;
-var serviceId = cfg["Consul:ServiceId"] ?? "camera-1";
-var serviceName = cfg["Consul:ServiceName"] ?? "CameraService";
+string serviceAddress = cfg["Service:AdvertisedHost"] ?? "127.0.0.1";
+string serviceId = cfg["Consul:ServiceId"] ?? $"camera-{node}";
 
 var registration = new AgentServiceRegistration
 {
     ID = serviceId,
-    Name = serviceName,
+    Name = ServiceName,
     Address = serviceAddress,
-    Port = servicePort,
+    Port = GrpcPort,
     Checks = new[]
     {
         new AgentServiceCheck
         {
-            GRPC = $"{serviceAddress}:{servicePort}",
+            GRPC = $"{serviceAddress}:{GrpcPort}",
             GRPCUseTLS = true,
-            // TLSSkipVerify = true, // nur falls der Agent deiner CA (vorübergehend) nicht vertraut
+            TLSSkipVerify = true, // DEV: Agent darf self-signed akzeptieren
             Interval = TimeSpan.FromSeconds(10),
             Timeout  = TimeSpan.FromSeconds(5),
             DeregisterCriticalServiceAfter = TimeSpan.FromMinutes(2)
@@ -169,93 +163,50 @@ var registration = new AgentServiceRegistration
 
 await consul.Agent.ServiceRegister(registration);
 
-// Bei KV-Änderungen ggf. neu registrieren (wenn Name/Adresse wechseln)
+// Re-Registration bei KV-Ã„nderung (nur Adresse)
 ChangeToken.OnChange(cfg.GetReloadToken, async () =>
 {
-    var newAddr = cfg["Service:AdvertisedHost"] ?? serviceAddress;
-    var newName = cfg["Consul:ServiceName"] ?? serviceName;
-
-    if (newAddr != serviceAddress || newName != serviceName)
+    string newAddr = cfg["Service:AdvertisedHost"] ?? serviceAddress;
+    if (newAddr != serviceAddress)
     {
-        try { await consul.Agent.ServiceDeregister(serviceId); } catch { /* ignore */ }
-        serviceAddress = newAddr; serviceName = newName;
-        registration.Address = serviceAddress; registration.Name = serviceName;
+        try { await consul.Agent.ServiceDeregister(serviceId); } catch { }
+        serviceAddress = newAddr;
+        registration.Address = serviceAddress;
         await consul.Agent.ServiceRegister(registration);
     }
 });
 
 lifetime.ApplicationStopping.Register(() =>
 {
-    try { consul.Agent.ServiceDeregister(serviceId).Wait(); } catch { /* ignore */ }
+    try { consul.Agent.ServiceDeregister(serviceId).Wait(); } catch { }
 });
 
 app.Run();
 
 // ========================== Helpers ==========================
-static X509Certificate2Collection? LoadRootCAsFromEnv(string? caFile, string? caDir)
+
+// FTDI COM-Port Auto-Detection (VID_0403 / PID_6001)
+static string? AutoDetectFtdiComPort()
 {
-    var col = new X509Certificate2Collection();
-
-    void ImportOne(string path)
+    if (!OperatingSystem.IsWindows()) return null;
+    try
     {
-        if (path.EndsWith(".pem", StringComparison.OrdinalIgnoreCase))
+        using var searcher = new System.Management.ManagementObjectSearcher(
+            "SELECT Name, PNPDeviceID FROM Win32_PnPEntity WHERE Name LIKE '%(COM%'");
+        foreach (var mo in searcher.Get())
         {
-            // importiert alle CERTIFICATE-Blöcke aus der PEM-Datei (ohne Keys)
-            col.ImportFromPemFile(path);
-        }
-        else if (path.EndsWith(".crt", StringComparison.OrdinalIgnoreCase) ||
-                 path.EndsWith(".cer", StringComparison.OrdinalIgnoreCase))
-        {
-            // DER/CRT einlesen
-            col.Import(File.ReadAllBytes(path));
+            string name = mo["Name"]?.ToString() ?? "";
+            string pnp = mo["PNPDeviceID"]?.ToString() ?? "";
+
+            bool isFtdi = pnp.Contains(@"FTDIBUS\COMPORT&VID_0403&PID_6001", StringComparison.OrdinalIgnoreCase)
+                          || (pnp.Contains("VID_0403", StringComparison.OrdinalIgnoreCase)
+                           && pnp.Contains("PID_6001", StringComparison.OrdinalIgnoreCase));
+            if (!isFtdi) continue;
+
+            var m = Regex.Match(name, @"\((COM\d+)\)");
+            if (m.Success) return m.Groups[1].Value;
         }
     }
-
-    if (!string.IsNullOrWhiteSpace(caFile) && File.Exists(caFile))
-    {
-        ImportOne(caFile);
-        return col;
-    }
-
-    if (!string.IsNullOrWhiteSpace(caDir) && Directory.Exists(caDir))
-    {
-        foreach (var p in Directory.EnumerateFiles(caDir, "*.*", SearchOption.TopDirectoryOnly))
-        {
-            try { ImportOne(p); } catch { /* ungültige Dateien ignorieren */ }
-        }
-        return col.Count > 0 ? col : null;
-    }
-
+    catch { /* ignore â†’ fallback */ }
     return null;
-}
-
-static bool ValidateWithCustomRoots(X509Certificate2? serverCert, X509Certificate2Collection roots)
-{
-    if (serverCert is null) return false;
-
-    using var chain = new X509Chain
-    {
-        ChainPolicy =
-        {
-            // CRL/OCSP für interne Test-CA meist nicht verfügbar
-            RevocationMode    = X509RevocationMode.NoCheck,
-            // Erlaube unbekannte (nicht im Windows-Rootstore verankerte) CAs,
-            // wir liefern die CA(s) über ExtraStore selbst mit:
-            VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority
-        }
-    };
-
-    // unsere(n) Root-/Intermediate-CA(s) anhängen
-    chain.ChainPolicy.ExtraStore.AddRange(roots);
-
-    // Wenn die Kette gegen unsere ExtraStore-CAs gebaut werden kann, ok:
-    return chain.Build(serverCert);
-}
-
-
-// ===== DTOs =====
-public record ViscaOptions
-{
-    public string? Port { get; init; }
-    public string? Baud { get; init; }
 }

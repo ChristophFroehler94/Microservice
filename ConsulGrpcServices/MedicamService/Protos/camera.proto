@@ -3,82 +3,51 @@ package camera.v1;
 
 import "google/protobuf/empty.proto";
 
-// Service definition for camera control and H.264 streaming
+// Service zur Kamerasteuerung und H.264-Streaming
 service CameraService {
-  // Kamera-Steuerung (VISCA)
-  rpc Power(PowerRequest)                       returns (StatusReply);
-  rpc Zoom(ZoomRequest)                         returns (StatusReply);
-  rpc SetFocusMode(SetFocusModeRequest)         returns (StatusReply);
-  rpc SetFocusPosition(SetFocusPositionRequest) returns (StatusReply);
-  rpc GetStatus(google.protobuf.Empty)          returns (CameraStatus);
+  rpc Power(PowerRequest) returns (StatusReply);
+  rpc Zoom(ZoomRequest) returns (StatusReply);
+  rpc GetStatus(google.protobuf.Empty) returns (CameraStatus);
   rpc StreamTs(StreamH264Request) returns (stream TsChunk);
   rpc TakeSnapshot(SnapshotRequest) returns (SnapshotReply);
 }
 
-// --- Live-Streaming ----
-
-message StreamH264Request {
-  string device_id = 1; // Symbolic Link der Kamera; leer = erste Kamera
-  int32  width     = 2; // z.B. 1920
-  int32  height    = 3; // z.B. 1080
-  int32  fps       = 4; // z.B. 60
-  int32  bitrate   = 5; // z.B. 6000000 (bps)
-}
-
-message TsChunk {
-  bytes data = 1;
-}
-
-// --- Schnappschuss ----
-
-message SnapshotRequest {
-  string device_id = 1; // Symbolic Link der Kamera; leer = erste Kamera
-  int32  width     = 2; // gewünschte Breite
-  int32  height    = 3; // gewünschte Höhe
-  string format    = 4; // "jpg" oder "png"
-}
-
-message SnapshotReply {
-  bytes image     = 1; // Raw-Bilddaten im gewählten Format
-  int64 timestamp = 2; // Unix-Timestamp in ms :contentReference[oaicite:2]{index=2}
-}
-
-// --------- Bestehende VISCA-Messages ---------
-
 message PowerRequest {
-  bool on = 1;
+  bool on = 1; // true ? Power ON, false ? Standby
 }
 
 message ZoomRequest {
-  oneof kind {
-    uint32 direct   = 1;
-    SidedSpeed variable = 2;
-    bool stop       = 3;
-  }
-  message SidedSpeed {
-    enum Direction { WIDE = 0; TELE = 1; }
-    Direction dir = 1;
-    uint32 speed  = 2;
-  }
-}
-
-message SetFocusModeRequest {
-  enum Mode { AUTO = 0; MANUAL = 1; }
-  Mode mode = 1;
-}
-
-message SetFocusPositionRequest {
-  uint32 direct = 1;
+  uint32 position = 1;  // Zielposition (z. B. 0..0x7AC0)
 }
 
 message StatusReply {
-  bool ok      = 1;
+  bool ok = 1;
   string message = 2;
 }
 
 message CameraStatus {
-  bool   poweredOn = 1;
-  uint32 zoomPos   = 2;
-  uint32 focusPos  = 3;
+  bool poweredOn = 1;
+  uint32 zoomPos = 2;
 }
 
+// ---- Streaming / Snapshot ----
+
+message StreamH264Request {
+  int32  width   = 1;
+  int32  height  = 2;
+  int32  fps     = 3;
+  int32  bitrate = 4;   // Bit/s
+}
+
+message TsChunk { bytes data = 1; }
+
+message SnapshotRequest {
+  int32  width   = 1;
+  int32  height  = 2;
+  string format  = 3;   // "jpg" oder "png"
+}
+
+message SnapshotReply {
+  bytes image     = 1;
+  int64 timestamp = 2; // Unix-ms
+}

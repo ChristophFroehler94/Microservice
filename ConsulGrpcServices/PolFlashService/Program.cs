@@ -1,61 +1,46 @@
-// Program.cs – PolFlash (Consul-KV + Winton + TLS-Roots aus ENV + v1/v2 Tagging)
+ï»¿// Program.cs â€” PolFlash (vereinheitlicht nach medicam; fixer Port 5295; ENV + Args + Consul-KV nur fÃ¼r Service.AdvertisedHost; TLS-PFX aus ENV)
 
 using Consul;
 using FotoFinder.PolFlashGrpc.Services;
 using FotoFinder.PolFlashXE.FlashDevices;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Primitives;
 using System.Security.Cryptography.X509Certificates;
 using Winton.Extensions.Configuration.Consul;
+using System.Linq;
+
+const int GrpcPort = 5295;
+const string ServiceName = "PolFlashService";
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = args });
 
 // ------------------------------------------------------------
-// 1) Konfigquellen: ENV (Standard), Args – KEIN appsettings.*
+// 1) Konfigquellen: ENV + Args + Consul KV (KEIN appsettings.*)
 // ------------------------------------------------------------
 builder.Configuration.Sources.Clear();
-builder.Configuration.AddEnvironmentVariables(prefix: "APP_"); // optional
+builder.Configuration.AddEnvironmentVariables(prefix: "APP_");
 builder.Configuration.AddCommandLine(args);
 
-// ---- Standard-ENV (HashiCorp Consul) ----
-// Doku: CONSUL_HTTP_ADDR / _TOKEN / _CACERT / _CAPATH / CONSUL_NODENAME
+// Konsul-Bootstrap aus ENV (DEV-freundliche Defaults)
 string consulAddr = Environment.GetEnvironmentVariable("CONSUL_HTTP_ADDR") ?? "https://127.0.0.1:8501";
-string? consulToken = Environment.GetEnvironmentVariable("CONSUL_HTTP_TOKEN");
-string? cacert = Environment.GetEnvironmentVariable("CONSUL_CACERT");
-string? capath = Environment.GetEnvironmentVariable("CONSUL_CAPATH");
-var consulRoots = LoadRootCAsFromEnv(cacert, capath);
-
-var rootCount = consulRoots?.Count ?? 0;
-Console.WriteLine($"[TLS] Loaded {rootCount} root CA(s) from {(cacert ?? capath ?? "(none)")}");
-
-// ---- KV-Key exakt wie das Setup-Skript seeden würde ----
-// polflash/<NodeName>/config.json  (NodeName via CONSUL_NODENAME)
 string node = Environment.GetEnvironmentVariable("CONSUL_NODENAME") ?? Environment.MachineName;
 string servicePrefix = Environment.GetEnvironmentVariable("SERVICE_PREFIX") ?? "polflash";
 string kvPath = Environment.GetEnvironmentVariable("CONSUL_KVPATH") ?? $"{servicePrefix}/{node}/config.json";
 
-// ------------------------------------------------------------
-// 2) Consul-KV als Konfigquelle (Winton) + TLS-Validierung
-// ------------------------------------------------------------
+// Minimal: nur Service.AdvertisedHost aus KV
 builder.Configuration.AddConsul(
     kvPath,
     options =>
     {
-        options.ConsulConfigurationOptions = cco =>
-        {
-            cco.Address = new Uri(consulAddr);
-            if (!string.IsNullOrWhiteSpace(consulToken))
-                cco.Token = consulToken;
-        };
+        options.ConsulConfigurationOptions = cco => { cco.Address = new Uri(consulAddr); };
 
-        if (consulRoots is not null)
+        // DEV ONLY: Consul-Agent nutzt eigene CA/Zerts â†’ ohne Root-Import zulassen
+        options.ConsulHttpClientHandlerOptions = h =>
         {
-            options.ConsulHttpClientHandlerOptions = handler =>
-            {
-                handler.ServerCertificateCustomValidationCallback =
-                    (req, cert, chain, errs) => ValidateWithCustomRoots(cert, consulRoots);
-            };
-        }
+            h.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        };
 
         options.Optional = false;
         options.ReloadOnChange = true;
@@ -64,21 +49,39 @@ builder.Configuration.AddConsul(
     });
 
 // ------------------------------------------------------------
-// 3) Kestrel dynamisch aus "Kestrel"-Section + HTTP/2-Fenster
+// 2) Kestrel: fester Port 5295 + HTTPS mit Dev-Zertifikat (PFX aus ENV)
 // ------------------------------------------------------------
-builder.WebHost.ConfigureKestrel((context, kestrel) =>
+var tlsPfxPath = Environment.GetEnvironmentVariable("APP_TLS_PFX");
+var tlsPfxPwd = Environment.GetEnvironmentVariable("APP_TLS_PFX_PASSWORD");
+
+X509Certificate2? serverCert = null;
+if (!string.IsNullOrWhiteSpace(tlsPfxPath) && File.Exists(tlsPfxPath))
 {
-    kestrel.Configure(context.Configuration.GetSection("Kestrel"), reloadOnChange: true);
-    try
+    // MachineKeySet damit auch als Dienst nutzbar; Exportable nur fÃ¼r Dev/Test
+    serverCert = new X509Certificate2(
+        tlsPfxPath,
+        tlsPfxPwd ?? string.Empty,
+        X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
+}
+
+builder.WebHost.ConfigureKestrel(kestrel =>
+{
+    kestrel.ListenAnyIP(GrpcPort, listen =>
     {
-        kestrel.Limits.Http2.InitialConnectionWindowSize = 16 * 1024 * 1024;
-        kestrel.Limits.Http2.InitialStreamWindowSize     = 16 * 1024 * 1024;
-    }
-    catch { /* falls Http2-Limits fehlen, ignorieren */ }
+        listen.Protocols = HttpProtocols.Http2; // gRPC benÃ¶tigt HTTP/2
+        if (serverCert is not null)
+        {
+            listen.UseHttps(serverCert); // explizites Dev-PFX
+        }
+        else
+        {
+            listen.UseHttps(); // Fallback: lokales Dev-Zertifikat (dotnet dev-certs)
+        }
+    });
 });
 
 // ------------------------------------------------------------
-// 4) Logging / gRPC / Health (Name wird unten nach Geräte-Detect gesetzt)
+// 3) Logging / gRPC / Health
 // ------------------------------------------------------------
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -88,99 +91,79 @@ builder.Services.AddGrpc(o => o.EnableDetailedErrors = true);
 builder.Services.AddGrpcReflection();
 
 // ------------------------------------------------------------
-// 5) PolFlash-Gerät entdecken & DI registrieren (+ v1/v2-Flag)
+// 4) PolFlash-GerÃ¤t ermitteln & DI registrieren (+ v1/v2 Tagging fÃ¼r Health/Consul)
 // ------------------------------------------------------------
 var devices = await FlashDeviceFactory.RefreshDeviceListAsync();
 var device = devices.OfType<IFlashDevice>().FirstOrDefault()
     ?? throw new InvalidOperationException("No compatible PolFlash device found");
 device.Initialize();
 
-// v2 erkennen (falls Interface vorhanden)
 bool isV2 = device is IFlashDevice2;
 string versionTag = isV2 ? "v2" : "v1";
 
-builder.Services.AddSingleton<IFlashDevice>(device);
-
-// Health-Check-Name dynamisch nach Version
+// Health-Check-Name mit Versionstag (analog camera-v1 im medicam)
 builder.Services.AddGrpcHealthChecks().AddCheck($"polflash-{versionTag}", () => HealthCheckResult.Healthy());
 
+// DI
+builder.Services.AddSingleton<IFlashDevice>(device);
+
 // ------------------------------------------------------------
-// 6) Consul-Client (TLS-Validation optional über Root-CAs)
+// 5) Consul-Client (DEV: Zertvalidierung gelockert; Consul nutzt eigene Zerts)
 // ------------------------------------------------------------
 builder.Services.AddSingleton<IConsulClient>(_ =>
 {
     return new ConsulClient(
-        configOverride: c =>
+        configOverride: c => { c.Address = new Uri(consulAddr); },
+        clientOverride: _ => { },
+        handlerOverride: h =>
         {
-            c.Address = new Uri(builder.Configuration["Consul:Address"] ?? consulAddr);
-            var token = builder.Configuration["Consul:Token"] ?? consulToken;
-            if (!string.IsNullOrWhiteSpace(token)) c.Token = token;
-        },
-        clientOverride: client => { /* client.Timeout = TimeSpan.FromSeconds(30); */ },
-        handlerOverride: handler =>
-        {
-            if (consulRoots is not null)
-            {
-                handler.ServerCertificateCustomValidationCallback =
-                    (req, cert, chain, errs) => ValidateWithCustomRoots(cert, consulRoots);
-            }
+            // DEV ONLY: akzeptiere Consul-Agent-Zertifikate ohne Root-Import
+            h.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         });
 });
 
 // ------------------------------------------------------------
-// 7) App-Endpunkte
+// 6) App-Endpunkte
 // ------------------------------------------------------------
 var app = builder.Build();
 
 app.MapGrpcService<FlashControlService>();
 app.MapGrpcHealthChecksService();
 app.MapGrpcReflectionService();
-app.MapGet("/", () => $"PolFlash gRPC Service is running… ({versionTag})");
+app.MapGet("/", () => $"PolFlash gRPC Service is runningâ€¦ ({versionTag})");
 
 // ------------------------------------------------------------
-// 8) Consul-Registrierung aus KV (mit Tags für v1/v2)
+// 7) Consul-Registrierung (nur AdvertisedHost aus KV)
 // ------------------------------------------------------------
 var cfg = app.Configuration;
 var consul = app.Services.GetRequiredService<IConsulClient>();
 var lifetime = app.Lifetime;
 
-// Port aus Kestrel-Konfig lesen (Fallback 5295 für PolFlash)
-var grpcUrl = cfg["Kestrel:Endpoints:Grpc:Url"] ?? "https://0.0.0.0:5295";
-var uri = new Uri(grpcUrl);
-
-// Advertised Host (aus Config), sonst loopback
-var serviceAddress = cfg["Service:AdvertisedHost"] ?? "127.0.0.1";
-var servicePort = uri.Port;
-
-// Dienst-IDs/-Namen aus Config (Defaults für PolFlash)
-var serviceId = cfg["Consul:ServiceId"]   ?? $"polflash-{versionTag}-1";
-var serviceName = cfg["Consul:ServiceName"] ?? "PolFlashService";
-
-// Tags & Meta für Version unterscheiden
-var tags = new List<string> { "grpc", "polflash", versionTag }; // <- v1 / v2
-var meta = new Dictionary<string, string>
-{
-    ["deviceVersion"] = versionTag,
-    ["impl"] = isV2 ? "IFlashDevice2" : "IFlashDevice"
-};
+string serviceAddress = cfg["Service:AdvertisedHost"] ?? "127.0.0.1";
+string serviceId = cfg["Consul:ServiceId"] ?? $"polflash-{node}";
 
 var registration = new AgentServiceRegistration
 {
-    ID      = serviceId,
-    Name    = serviceName,
+    ID = serviceId,
+    Name = ServiceName,
     Address = serviceAddress,
-    Port    = servicePort,
-    Tags    = tags.ToArray(),
-    Meta    = meta,
-    Checks  = new[]
+    Port = GrpcPort,
+    Tags = new[] { "grpc", "polflash", versionTag },
+    Meta = new Dictionary<string, string>
     {
-        // gRPC-Health-Check via TLS
+        ["deviceVersion"] = versionTag,
+        ["impl"] = isV2 ? "IFlashDevice2" : "IFlashDevice"
+    },
+    Checks = new[]
+    {
         new AgentServiceCheck
         {
-            GRPC       = $"{serviceAddress}:{servicePort}",
-            GRPCUseTLS = true,
-            Interval   = TimeSpan.FromSeconds(10),
-            Timeout    = TimeSpan.FromSeconds(5),
+            GRPC                 = $"{serviceAddress}:{GrpcPort}",
+            GRPCUseTLS           = true,
+            TLSSkipVerify        = true, // DEV: Agent darf self-signed akzeptieren
+            Interval             = TimeSpan.FromSeconds(10),
+            Timeout              = TimeSpan.FromSeconds(5),
             DeregisterCriticalServiceAfter = TimeSpan.FromMinutes(2)
         }
     }
@@ -188,17 +171,15 @@ var registration = new AgentServiceRegistration
 
 await consul.Agent.ServiceRegister(registration);
 
-// Bei KV-Änderungen ggf. neu registrieren (wenn Name/Adresse wechseln)
+// Re-Registration bei KV-Ã„nderung (nur Adresse)
 ChangeToken.OnChange(cfg.GetReloadToken, async () =>
 {
-    var newAddr = cfg["Service:AdvertisedHost"] ?? serviceAddress;
-    var newName = cfg["Consul:ServiceName"] ?? serviceName;
-
-    if (newAddr != serviceAddress || newName != serviceName)
+    string newAddr = cfg["Service:AdvertisedHost"] ?? serviceAddress;
+    if (newAddr != serviceAddress)
     {
         try { await consul.Agent.ServiceDeregister(serviceId); } catch { /* ignore */ }
-        serviceAddress = newAddr; serviceName = newName;
-        registration.Address = serviceAddress; registration.Name = serviceName;
+        serviceAddress = newAddr;
+        registration.Address = serviceAddress;
         await consul.Agent.ServiceRegister(registration);
     }
 });
@@ -209,56 +190,3 @@ lifetime.ApplicationStopping.Register(() =>
 });
 
 app.Run();
-
-// ========================== Helpers ==========================
-static X509Certificate2Collection? LoadRootCAsFromEnv(string? caFile, string? caDir)
-{
-    var col = new X509Certificate2Collection();
-
-    void ImportOne(string path)
-    {
-        if (path.EndsWith(".pem", StringComparison.OrdinalIgnoreCase))
-        {
-            col.ImportFromPemFile(path); // alle CERTIFICATE-Blöcke
-        }
-        else if (path.EndsWith(".crt", StringComparison.OrdinalIgnoreCase) ||
-                 path.EndsWith(".cer", StringComparison.OrdinalIgnoreCase))
-        {
-            col.Import(File.ReadAllBytes(path));
-        }
-    }
-
-    if (!string.IsNullOrWhiteSpace(caFile) && File.Exists(caFile))
-    {
-        ImportOne(caFile);
-        return col;
-    }
-
-    if (!string.IsNullOrWhiteSpace(caDir) && Directory.Exists(caDir))
-    {
-        foreach (var p in Directory.EnumerateFiles(caDir, "*.*", SearchOption.TopDirectoryOnly))
-        {
-            try { ImportOne(p); } catch { /* ungültige Dateien ignorieren */ }
-        }
-        return col.Count > 0 ? col : null;
-    }
-
-    return null;
-}
-
-static bool ValidateWithCustomRoots(X509Certificate2? serverCert, X509Certificate2Collection roots)
-{
-    if (serverCert is null) return false;
-
-    using var chain = new X509Chain
-    {
-        ChainPolicy =
-        {
-            RevocationMode    = X509RevocationMode.NoCheck,
-            VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority
-        }
-    };
-
-    chain.ChainPolicy.ExtraStore.AddRange(roots);
-    return chain.Build(serverCert);
-}
