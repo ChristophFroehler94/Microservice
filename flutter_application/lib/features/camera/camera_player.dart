@@ -1,7 +1,8 @@
 // lib/features/camera/camera_player.dart
+// Player/Recorder: H.264 MPEG-TS als Live-Playback (Windows-NamedPipe) oder TS-Datei.
+
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -67,7 +68,7 @@ class CameraPlayer {
   Future<void> _tunePlayer() async {
     if (_tuned || _player == null) return;
     final native = _player!.platform as NativePlayer;
-    // Niedrige Latenz für MPEG-TS (H.264)
+    // Niedrige Latenz für MPEG-TS
     await native.command(['apply-profile', 'low-latency']);
     await native.setProperty('demuxer-lavf-format', 'mpegts');
     await native.setProperty('demuxer-lavf-buffersize', '16384');

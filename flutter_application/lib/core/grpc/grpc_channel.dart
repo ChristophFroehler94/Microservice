@@ -1,23 +1,20 @@
 // lib/core/grpc/grpc_channel.dart
+// Zentrale Erzeugung von gRPC-Channels (TLS mit Root-CA).
+// 'authority' setzt :authority (und i.d.R. SNI) – nur bei DNS nötig. :contentReference[oaicite:8]{index=8}
+
 import 'package:grpc/grpc.dart';
 
-/// Zentrale Stelle, um gRPC-Kanäle zu erzeugen.
 class GrpcChannelFactory {
-  /// TLS-Channel mit **Server-Zertifikat-Pinning**.
-  ///
-  /// [serverCertPem] = PEM des **MedicamService**-Zertifikats (Dev-Zertifikat).
-  /// [authority]     = SNI/HTTP2 :authority (z. B. 'localhost' für Dev-Cert).
+  /// TLS-Channel mit Root-CA-Trust (kein End-Entity-Pinning).
   static ClientChannel secure(
     String host,
     int port, {
-    required List<int> serverCertPem,
+    required List<int> trustedCaPem,
     String? authority,
   }) {
-    // gRPC-Dart: certificates=Root(s) für Trust-Store dieses Channels, authority=SNI+HTTP/2 :authority
-    // https://pub.dev/documentation/grpc/latest/grpc/ChannelCredentials/ChannelCredentials.secure.html
     final creds = ChannelCredentials.secure(
-      certificates: serverCertPem,
-      authority: authority,
+      certificates: trustedCaPem, // Root-CA(s) für diesen Channel
+      authority: authority,       // optional: DNS/SNI
     );
     return ClientChannel(
       host,
@@ -26,7 +23,7 @@ class GrpcChannelFactory {
     );
   }
 
-  /// (Nur für Tests) Klartext-Channel.
+  /// (Nur Tests) Klartext-Channel.
   static ClientChannel insecure(String host, int port) {
     return ClientChannel(
       host,

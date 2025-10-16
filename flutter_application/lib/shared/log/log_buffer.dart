@@ -1,6 +1,8 @@
+// lib/shared/log/log_buffer.dart
+// Hält die letzten N Log-Zeilen in einem ValueNotifier<String>.
+
 import 'package:flutter/foundation.dart';
 
-/// Hält die letzten N Log-Zeilen in einem ValueNotifier 'String'.
 class LogBuffer {
   final int max;
   final _lines = <String>[];

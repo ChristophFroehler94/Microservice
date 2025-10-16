@@ -1,14 +1,13 @@
-// This is a generated file - do not edit.
 //
-// Generated from flashcontrol.proto.
-
+//  Generated code. Do not modify.
+//  source: flashcontrol.proto
+//
 // @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names
-// ignore_for_file: curly_braces_in_flow_control_structures
-// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
-// ignore_for_file: non_constant_identifier_names, unused_import
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -37,8 +36,8 @@ const FlashStateResponse$json = {
 };
 
 /// Descriptor for `FlashStateResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List flashStateResponseDescriptor = $convert
-    .base64Decode('ChJGbGFzaFN0YXRlUmVzcG9uc2USFAoFc3RhdGUYASABKAVSBXN0YXRl');
+final $typed_data.Uint8List flashStateResponseDescriptor = $convert.base64Decode(
+    'ChJGbGFzaFN0YXRlUmVzcG9uc2USFAoFc3RhdGUYASABKAVSBXN0YXRl');
 
 @$core.Deprecated('Use getFlashCountResponseDescriptor instead')
 const GetFlashCountResponse$json = {
@@ -49,9 +48,8 @@ const GetFlashCountResponse$json = {
 };
 
 /// Descriptor for `GetFlashCountResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List getFlashCountResponseDescriptor =
-    $convert.base64Decode(
-        'ChVHZXRGbGFzaENvdW50UmVzcG9uc2USFAoFY291bnQYASABKAVSBWNvdW50');
+final $typed_data.Uint8List getFlashCountResponseDescriptor = $convert.base64Decode(
+    'ChVHZXRGbGFzaENvdW50UmVzcG9uc2USFAoFY291bnQYASABKAVSBWNvdW50');
 
 @$core.Deprecated('Use setFlashEnergyRequestDescriptor instead')
 const SetFlashEnergyRequest$json = {
@@ -71,22 +69,8 @@ final $typed_data.Uint8List setFlashEnergyRequestDescriptor = $convert.base64Dec
 const SetPolarizationRequest$json = {
   '1': 'SetPolarizationRequest',
   '2': [
-    {
-      '1': 'rightMode',
-      '3': 1,
-      '4': 1,
-      '5': 14,
-      '6': '.polflash.SetPolarizationRequest.PolarizationMode',
-      '10': 'rightMode'
-    },
-    {
-      '1': 'leftMode',
-      '3': 2,
-      '4': 1,
-      '5': 14,
-      '6': '.polflash.SetPolarizationRequest.PolarizationMode',
-      '10': 'leftMode'
-    },
+    {'1': 'rightMode', '3': 1, '4': 1, '5': 14, '6': '.polflash.SetPolarizationRequest.PolarizationMode', '10': 'rightMode'},
+    {'1': 'leftMode', '3': 2, '4': 1, '5': 14, '6': '.polflash.SetPolarizationRequest.PolarizationMode', '10': 'leftMode'},
   ],
   '4': [SetPolarizationRequest_PolarizationMode$json],
 };
@@ -117,29 +101,15 @@ const LaserRequest$json = {
 };
 
 /// Descriptor for `LaserRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List laserRequestDescriptor = $convert
-    .base64Decode('CgxMYXNlclJlcXVlc3QSGgoIaXNBY3RpdmUYASABKAhSCGlzQWN0aXZl');
+final $typed_data.Uint8List laserRequestDescriptor = $convert.base64Decode(
+    'CgxMYXNlclJlcXVlc3QSGgoIaXNBY3RpdmUYASABKAhSCGlzQWN0aXZl');
 
 @$core.Deprecated('Use polarizationModeResponseDescriptor instead')
 const PolarizationModeResponse$json = {
   '1': 'PolarizationModeResponse',
   '2': [
-    {
-      '1': 'rightMode',
-      '3': 1,
-      '4': 1,
-      '5': 14,
-      '6': '.polflash.SetPolarizationRequest.PolarizationMode',
-      '10': 'rightMode'
-    },
-    {
-      '1': 'leftMode',
-      '3': 2,
-      '4': 1,
-      '5': 14,
-      '6': '.polflash.SetPolarizationRequest.PolarizationMode',
-      '10': 'leftMode'
-    },
+    {'1': 'rightMode', '3': 1, '4': 1, '5': 14, '6': '.polflash.SetPolarizationRequest.PolarizationMode', '10': 'rightMode'},
+    {'1': 'leftMode', '3': 2, '4': 1, '5': 14, '6': '.polflash.SetPolarizationRequest.PolarizationMode', '10': 'leftMode'},
   ],
 };
 
@@ -177,3 +147,4 @@ const FlashEnergyResponse$json = {
 final $typed_data.Uint8List flashEnergyResponseDescriptor = $convert.base64Decode(
     'ChNGbGFzaEVuZXJneVJlc3BvbnNlEigKD3BlcmNlbnRhZ2VSaWdodBgBIAEoAVIPcGVyY2VudG'
     'FnZVJpZ2h0EiYKDnBlcmNlbnRhZ2VMZWZ0GAIgASgBUg5wZXJjZW50YWdlTGVmdA==');
+

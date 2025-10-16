@@ -9,10 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  grpc: ^4.1.0
+  grpc: 4.1.0
   fixnum: ^1.1.0 
-  protobuf: ^4.1.1
-  file_picker: ^6.0.0      # Pfadwahl zum Speichern
+  protobuf: 4.0.0
+  file_picker: ^10.3.3      # Pfadwahl zum Speichern
   path_provider: ^2.1.0    # Standard-Downloadordner o. ä.
   ffi: ^2.1.4
   http: ^1.2.0
@@ -23,15 +23,15 @@ dependencies:
   media_kit_libs_windows_video: ^1.0.11
 
   # Windows FFI für Named Pipes
-  win32: ^5.5.4
+  win32: ^5.15.0
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  protoc_plugin: ^22.5.0
+  protoc_plugin: 22.1.0
 
 flutter:
   assets:
     - assets/consul-agent-ca.pem
-    - assets/consul-srv-1-dev.pem
+    - assets/rootCA.pem

@@ -1,4 +1,6 @@
 // lib/features/camera/camera_page.dart
+// UI für Kamerasteuerung, nutzt gRPC-Client und CameraPlayer (Live/TS Save).
+
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -21,7 +23,7 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   late final CameraPlayer _player;
-  int _zoomPos = 0x2000; // Startwert in der Mitte
+  int _zoomPos = 0x2000; // Start-Mitte
 
   @override
   void initState() {
@@ -64,7 +66,7 @@ class _CameraPageState extends State<CameraPage> {
     if (_client == null) return;
     try {
       final rep = await _client!.zoom(ZoomRequest()..position = _zoomPos);
-      _appendLog('Zoom positioniert: ok=${rep.ok}');
+      _appendLog('Zoom gesetzt: ok=${rep.ok}');
     } catch (e) {
       _setLog('Zoom-Fehler: $e');
     }

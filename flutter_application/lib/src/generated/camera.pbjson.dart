@@ -1,14 +1,13 @@
-// This is a generated file - do not edit.
 //
-// Generated from camera.proto.
-
+//  Generated code. Do not modify.
+//  source: camera.proto
+//
 // @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names
-// ignore_for_file: curly_braces_in_flow_control_structures
-// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
-// ignore_for_file: non_constant_identifier_names, unused_import
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -23,8 +22,8 @@ const PowerRequest$json = {
 };
 
 /// Descriptor for `PowerRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List powerRequestDescriptor =
-    $convert.base64Decode('CgxQb3dlclJlcXVlc3QSDgoCb24YASABKAhSAm9u');
+final $typed_data.Uint8List powerRequestDescriptor = $convert.base64Decode(
+    'CgxQb3dlclJlcXVlc3QSDgoCb24YASABKAhSAm9u');
 
 @$core.Deprecated('Use zoomRequestDescriptor instead')
 const ZoomRequest$json = {
@@ -35,8 +34,8 @@ const ZoomRequest$json = {
 };
 
 /// Descriptor for `ZoomRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List zoomRequestDescriptor = $convert
-    .base64Decode('Cgtab29tUmVxdWVzdBIaCghwb3NpdGlvbhgBIAEoDVIIcG9zaXRpb24=');
+final $typed_data.Uint8List zoomRequestDescriptor = $convert.base64Decode(
+    'Cgtab29tUmVxdWVzdBIaCghwb3NpdGlvbhgBIAEoDVIIcG9zaXRpb24=');
 
 @$core.Deprecated('Use statusReplyDescriptor instead')
 const StatusReply$json = {
@@ -91,8 +90,8 @@ const TsChunk$json = {
 };
 
 /// Descriptor for `TsChunk`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List tsChunkDescriptor =
-    $convert.base64Decode('CgdUc0NodW5rEhIKBGRhdGEYASABKAxSBGRhdGE=');
+final $typed_data.Uint8List tsChunkDescriptor = $convert.base64Decode(
+    'CgdUc0NodW5rEhIKBGRhdGEYASABKAxSBGRhdGE=');
 
 @$core.Deprecated('Use snapshotRequestDescriptor instead')
 const SnapshotRequest$json = {
@@ -122,3 +121,4 @@ const SnapshotReply$json = {
 final $typed_data.Uint8List snapshotReplyDescriptor = $convert.base64Decode(
     'Cg1TbmFwc2hvdFJlcGx5EhQKBWltYWdlGAEgASgMUgVpbWFnZRIcCgl0aW1lc3RhbXAYAiABKA'
     'NSCXRpbWVzdGFtcA==');
+

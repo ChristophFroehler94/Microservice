@@ -1,10 +1,12 @@
+// lib/features/flash/flash_page.dart
+// Minimal-UI für PolFlash: wichtige RPCs mit Logausgabe.
+
 import 'package:flutter/material.dart';
 
 import '../../core/connection/connection_service.dart';
 import '../../src/generated/flashcontrol.pbgrpc.dart' as pol;
 import '../../src/generated/google/protobuf/empty.pb.dart' as wkt;
 
-/// Seite für PolFlash‑Steuerung mit den wichtigsten RPC‑Aufrufen.
 class FlashPage extends StatelessWidget {
   const FlashPage({super.key, required this.conn, required this.log});
 
@@ -21,7 +23,7 @@ class FlashPage extends StatelessWidget {
       final res = await _flash!.charge(wkt.Empty());
       _appendLog('Charge: ok=${res.success} msg=${res.message}');
     } catch (e) {
-      _appendLog('Charge‑Fehler: $e');
+      _appendLog('Charge-Fehler: $e');
     }
   }
 
@@ -31,7 +33,7 @@ class FlashPage extends StatelessWidget {
       final res = await _flash!.discharge(wkt.Empty());
       _appendLog('Discharge: ok=${res.success} msg=${res.message}');
     } catch (e) {
-      _appendLog('Discharge‑Fehler: $e');
+      _appendLog('Discharge-Fehler: $e');
     }
   }
 
@@ -41,7 +43,7 @@ class FlashPage extends StatelessWidget {
       final res = await _flash!.trigger(wkt.Empty());
       _appendLog('Trigger: ok=${res.success} msg=${res.message}');
     } catch (e) {
-      _appendLog('Trigger‑Fehler: $e');
+      _appendLog('Trigger-Fehler: $e');
     }
   }
 
@@ -51,7 +53,7 @@ class FlashPage extends StatelessWidget {
       final st = await _flash!.getFlashState(wkt.Empty());
       _appendLog('FlashState: state=${st.state}');
     } catch (e) {
-      _appendLog('GetFlashState‑Fehler: $e');
+      _appendLog('GetFlashState-Fehler: $e');
     }
   }
 
@@ -61,7 +63,7 @@ class FlashPage extends StatelessWidget {
       final r = await _flash!.getFlashCount(wkt.Empty());
       _appendLog('FlashCount: ${r.count}');
     } catch (e) {
-      _appendLog('GetFlashCount‑Fehler: $e');
+      _appendLog('GetFlashCount-Fehler: $e');
     }
   }
 
@@ -71,7 +73,7 @@ class FlashPage extends StatelessWidget {
       final r = await _flash!.getFlashEnergy(wkt.Empty());
       _appendLog('Energy: right=${r.percentageRight.toStringAsFixed(1)}%  left=${r.percentageLeft.toStringAsFixed(1)}%');
     } catch (e) {
-      _appendLog('GetEnergy‑Fehler: $e');
+      _appendLog('GetEnergy-Fehler: $e');
     }
   }
 
@@ -81,7 +83,7 @@ class FlashPage extends StatelessWidget {
       final r = await _flash!.getPolarizationMode(wkt.Empty());
       _appendLog('Polarization: right=${r.rightMode} left=${r.leftMode}');
     } catch (e) {
-      _appendLog('GetPolarization‑Fehler: $e');
+      _appendLog('GetPolarization-Fehler: $e');
     }
   }
 
@@ -95,7 +97,7 @@ class FlashPage extends StatelessWidget {
       );
       _appendLog('SetEnergy: ok=${r.success} msg=${r.message}');
     } catch (e) {
-      _appendLog('SetEnergy‑Fehler: $e');
+      _appendLog('SetEnergy-Fehler: $e');
     }
   }
 
@@ -109,7 +111,7 @@ class FlashPage extends StatelessWidget {
       );
       _appendLog('SetPolarization: ok=${r.success} msg=${r.message}');
     } catch (e) {
-      _appendLog('SetPolarization‑Fehler: $e');
+      _appendLog('SetPolarization-Fehler: $e');
     }
   }
 
@@ -119,7 +121,7 @@ class FlashPage extends StatelessWidget {
       final r = await _flash!.setLaser(pol.LaserRequest()..isActive = on);
       _appendLog('Laser(${on ? 'ON' : 'OFF'}): ok=${r.success} msg=${r.message}');
     } catch (e) {
-      _appendLog('Laser‑Fehler: $e');
+      _appendLog('Laser-Fehler: $e');
     }
   }
 
@@ -130,7 +132,7 @@ class FlashPage extends StatelessWidget {
       final hw = await _flash!.getHardwareVersion(wkt.Empty());
       _appendLog('Versionen: SW ${sw.major}.${sw.minor}  •  HW ${hw.major}.${hw.minor}');
     } catch (e) {
-      _appendLog('Version‑Fehler: $e');
+      _appendLog('Version-Fehler: $e');
     }
   }
 
@@ -140,7 +142,7 @@ class FlashPage extends StatelessWidget {
       final r = await _flash!.getStateMachine(wkt.Empty());
       _appendLog('StateMachine: state=${r.state}');
     } catch (e) {
-      _appendLog('GetStateMachine‑Fehler: $e');
+      _appendLog('GetStateMachine-Fehler: $e');
     }
   }
 

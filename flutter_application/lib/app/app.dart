@@ -1,4 +1,8 @@
 // lib/app/app.dart
+// App-Shell: TLS-Setup (Consul-CA + mkcert-Root-CA), Consul-Discovery,
+// Auswahl Service/Instanz, Verbindungsaufbau gRPC, Abruf von Metriken.
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -10,7 +14,7 @@ import '../shared/model/capture_profile.dart';
 import '../shared/log/log_buffer.dart';
 import '../shared/widgets/log_panel.dart';
 
-// Feature-Seiten lazy via deferred import
+// Feature-Seiten via deferred import
 import '../features/camera/camera_page.dart' deferred as cam;
 import '../features/flash/flash_page.dart' deferred as fl;
 
@@ -26,13 +30,12 @@ class _AppState extends State<App> {
 
   ConnectionService? _conn;
   ConsulDiscovery? _discovery;
- _conn = ConnectionService
-  // TLS-Material
-  List<int>? _consulCaPem;
-  List<int>? _grpcServerCertPem; // Dev-Zertifikat des MedicamService
+
+  // TLS-Material: beide PEMs sind Root-CAs
+  List<int>? _consulCaPem; // Consul-CA (Consul TLS)
+  List<int>? _grpcCaPem;   // mkcert Root-CA (gRPC/Kestrel TLS)
 
   static const String kDefaultConsulUrl = 'https://192.168.178.48:8501';
-
   final _consulCtrl = TextEditingController(text: kDefaultConsulUrl);
   final _tagCtrl = TextEditingController(text: 'grpc');
 
@@ -45,6 +48,10 @@ class _AppState extends State<App> {
   late final LogBuffer _logBuffer;
   bool _busy = false;
 
+  // Asset-Pfade
+  static const String _assetConsulCa = 'assets/consul-agent-ca.pem';
+  static const String _assetGrpcCa   = 'assets/rootCA.pem';
+
   @override
   void initState() {
     super.initState();
@@ -53,26 +60,25 @@ class _AppState extends State<App> {
 
     () async {
       try {
-        // 1) Consul-Root-CA pinnen
-        final caData = await rootBundle.load('assets/consul-agent-ca.pem');
+        // Consul-CA laden (TLS-Vertrauen nur für Consul)
+        final caData = await rootBundle.load(_assetConsulCa);
         _consulCaPem = caData.buffer.asUint8List();
 
-        // 2) gRPC-Serverzertifikat (Dev-Zertifikat) pinnen
-        final grpcData = await rootBundle.load('assets/medicam-dev-cert.pem');
-        _grpcServerCertPem = grpcData.buffer.asUint8List();
+        // mkcert-Root-CA laden (TLS-Vertrauen für gRPC/Kestrel)
+        final grpcCa = await rootBundle.load(_assetGrpcCa);
+        _grpcCaPem = grpcCa.buffer.asUint8List();
 
-        // 3) Services bauen
+        // Services konstruieren
         _discovery = ConsulDiscovery(_effectiveConsulUrl(), caPem: _consulCaPem!);
         _conn = ConnectionService(
-          caPem: _consulCaPem!,                // nur für Consul-HTTPS
-          grpcCertPem: _grpcServerCertPem!,    // Dev-Zertifikat des MedicamService
-          authorityOverride: 'localhost',      // SNI/Authority -> passt zum Dev-Cert CN/SAN
+          grpcCaPem: _grpcCaPem!,
+          authorityOverride: null, // bei IP+SAN nicht nötig; DNS hier setzen falls verwendet
           onLog: _appendLog,
         );
 
-        _logBuffer.append('TLS bereit: Consul(✅ CA) • gRPC(✅ Dev-Zertifikat, authority=localhost).');
+        _logBuffer.append('TLS bereit: Consul(✅ CA) • gRPC(✅ CA).');
       } catch (e) {
-        _appendLog('TLS init failed: $e');
+        _appendLog('TLS init fehlgeschlagen: $e');
       } finally {
         if (mounted) setState(() {});
       }
@@ -126,7 +132,7 @@ class _AppState extends State<App> {
   }
 
   Future<void> _browseAndConnect() async {
-    if (_consulCaPem == null || _grpcServerCertPem == null) {
+    if (_consulCaPem == null || _grpcCaPem == null) {
       _snack('TLS-Material noch nicht geladen.');
       return;
     }
@@ -142,13 +148,11 @@ class _AppState extends State<App> {
       if (_discovery!.base.toString() != url) {
         _discovery?.dispose();
         _discovery = ConsulDiscovery(url, caPem: _consulCaPem!);
-        _appendLog('Consul-URL gesetzt auf: $url');
+        _appendLog('Consul-URL aktualisiert: $url');
       }
 
       final tag = _tagCtrl.text.trim().isEmpty ? null : _tagCtrl.text.trim();
-      _appendLog('Lade Services aus Consul …');
-
-      // /v1/catalog/services (optional lokal per Tag filtern) :contentReference[oaicite:2]{index=2}
+      _appendLog('Lese Services aus Consul …');
       final services = await _discovery!.listServices(tag: tag);
       if (!mounted) return;
 
@@ -176,12 +180,9 @@ class _AppState extends State<App> {
           ],
         ),
       );
-
       if (selectedService == null) return;
 
       _appendLog('Lade gesunde Instanzen für "$selectedService" …');
-
-      // /v1/health/service/<name>?passing (nur "passing" Instanzen) :contentReference[oaicite:3]{index=3}
       final instances = await _discovery!.listHealthyInstances(
         serviceName: selectedService,
         tag: tag,
@@ -219,7 +220,6 @@ class _AppState extends State<App> {
           ],
         ),
       );
-
       if (inst == null) return;
 
       await _conn!.connect(instance: inst, selectedServiceName: selectedService);
@@ -235,7 +235,32 @@ class _AppState extends State<App> {
           ' • Typ: ${_conn!.kind?.label ?? '-'}');
       setState(() {});
     } catch (e) {
-      _appendLog('Fehler beim Verbinden: $e');
+      _appendLog('Verbindungsfehler: $e');
+      _snack('Fehler: $e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _fetchMetrics() async {
+    if (_conn?.instance == null) {
+      _snack('Keine aktive Verbindung.');
+      return;
+    }
+    setState(() => _busy = true);
+    try {
+      final snap = await _conn!.fetchMetricsSnapshot();
+      _appendLog('Metrics Snapshot:\n${const JsonEncoder.withIndent('  ').convert(snap)}');
+
+      // „Fortgeschrittene“ Metriken (nur Medicam, falls Endpunkte existieren)
+      final adv = await _conn!.tryFetchAdvancedMetrics();
+      if (adv != null) {
+        _appendLog('Advanced Metrics:\n${const JsonEncoder.withIndent('  ').convert(adv)}');
+      } else {
+        _appendLog('Advanced Metrics: nicht verfügbar.');
+      }
+    } catch (e) {
+      _appendLog('Metrics-Fehler: $e');
       _snack('Fehler: $e');
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -262,7 +287,7 @@ class _AppState extends State<App> {
                       controller: _consulCtrl,
                       decoration: const InputDecoration(
                         labelText: 'Consul URL',
-                        hintText: 'z. B. https://10.10.4.22:8501',
+                        hintText: 'z. B. https://192.168.178.48:8501',
                       ),
                       onSubmitted: (_) => setState(() {}),
                     ),
@@ -283,6 +308,12 @@ class _AppState extends State<App> {
                     onPressed: (_busy || _discovery == null) ? null : _browseAndConnect,
                     icon: const Icon(Icons.list),
                     label: const Text('Services durchsuchen'),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton.icon(
+                    onPressed: (_busy || _conn?.instance == null) ? null : _fetchMetrics,
+                    icon: const Icon(Icons.analytics),
+                    label: const Text('Metriken abrufen'),
                   ),
                   const SizedBox(width: 12),
                   if (_busy)

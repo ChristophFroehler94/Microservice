@@ -1,7 +1,9 @@
+// lib/shared/widgets/log_panel.dart
+// Einfaches Log-Panel (scrollbar, selektierbar).
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
-/// Einfache, wiederverwendbare Log‑Ausgabe als Panel mit Rahmen.
 class LogPanel extends StatelessWidget {
   const LogPanel({super.key, required this.text});
 
