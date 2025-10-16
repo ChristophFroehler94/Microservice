@@ -193,7 +193,6 @@ C:\Users\Christoph Fröhler\Documents\GitHub\Microservice\ConsulGrpcServices\Pol
 C:\Users\Christoph Fröhler\Documents\GitHub\Microservice\ConsulGrpcServices\PolFlashService\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\Christoph Fröhler\Documents\GitHub\Microservice\ConsulGrpcServices\PolFlashService\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\Christoph Fröhler\Documents\GitHub\Microservice\ConsulGrpcServices\PolFlashService\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-C:\Users\Christoph Fröhler\Documents\GitHub\Microservice\ConsulGrpcServices\PolFlashService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\Christoph Fröhler\Documents\GitHub\Microservice\ConsulGrpcServices\PolFlashService\obj\Debug\net8.0\PolFlash.4ECC38FD.Up2Date
 C:\Users\Christoph Fröhler\Documents\GitHub\Microservice\ConsulGrpcServices\PolFlashService\obj\Debug\net8.0\CameraService.dll
 C:\Users\Christoph Fröhler\Documents\GitHub\Microservice\ConsulGrpcServices\PolFlashService\obj\Debug\net8.0\refint\CameraService.dll
