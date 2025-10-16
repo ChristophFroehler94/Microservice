@@ -1,22 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\",
+  "WorkspaceRootPath": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{57910FC8-C991-4C4F-D185-27E6DE6A31F8}|PolFlashService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\polflashservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57910FC8-C991-4C4F-D185-27E6DE6A31F8}|PolFlashService.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{57910FC8-C991-4C4F-D185-27E6DE6A31F8}|PolFlashService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\polflashservice\\services\\flashcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57910FC8-C991-4C4F-D185-27E6DE6A31F8}|PolFlashService.csproj|solutionrelative:services\\flashcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\appsettings.Development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:appsettings.Development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:PolFlashService.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{57910FC8-C991-4C4F-D185-27E6DE6A31F8}|PolFlashService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\polflashservice\\protos\\flashcontrol.proto||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{57910FC8-C991-4C4F-D185-27E6DE6A31F8}|PolFlashService.csproj|solutionrelative:protos\\flashcontrol.proto||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,58 +22,44 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-15T08:11:01.862Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "appsettings.Development.json",
-              "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\appsettings.Development.json",
-              "RelativeDocumentMoniker": "appsettings.Development.json",
-              "ToolTip": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\appsettings.Development.json",
-              "RelativeToolTip": "appsettings.Development.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-15T08:11:00.059Z",
-              "EditorCaption": ""
+              "Title": "flashcontrol.proto",
+              "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\Protos\\flashcontrol.proto",
+              "RelativeDocumentMoniker": "Protos\\flashcontrol.proto",
+              "ToolTip": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\Protos\\flashcontrol.proto",
+              "RelativeToolTip": "Protos\\flashcontrol.proto",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAC8AAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003853|",
+              "WhenOpened": "2025-10-15T21:43:25.514Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "PolFlashService.csproj",
-              "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj",
-              "RelativeDocumentMoniker": "PolFlashService.csproj",
-              "ToolTip": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj",
-              "RelativeToolTip": "PolFlashService.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-10-15T08:10:58.778Z",
+              "DocumentIndex": 1,
+              "Title": "FlashControlService.cs",
+              "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\Services\\FlashControlService.cs",
+              "RelativeDocumentMoniker": "Services\\FlashControlService.cs",
+              "ToolTip": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\Services\\FlashControlService.cs",
+              "RelativeToolTip": "Services\\FlashControlService.cs",
+              "ViewState": "AgIAAOgAAAAAAAAAAAAswPYAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-15T21:43:16.664Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\Christoph Fr\u00F6hler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\Program.cs",
+              "ToolTip": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAJYAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGcBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T08:09:21.498Z",
+              "WhenOpened": "2025-10-15T21:42:46.431Z",
               "EditorCaption": ""
             }
           ]

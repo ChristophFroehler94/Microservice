@@ -1,9 +1,8 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 package camera.v1;
 
 import "google/protobuf/empty.proto";
 
-// Service zur Kamerasteuerung und H.264-Streaming
 service CameraService {
   rpc Power(PowerRequest) returns (StatusReply);
   rpc Zoom(ZoomRequest) returns (StatusReply);
@@ -12,42 +11,14 @@ service CameraService {
   rpc TakeSnapshot(SnapshotRequest) returns (SnapshotReply);
 }
 
-message PowerRequest {
-  bool on = 1; // true ? Power ON, false ? Standby
-}
+message PowerRequest { bool on = 1; }
+message ZoomRequest  { uint32 position = 1; }
 
-message ZoomRequest {
-  uint32 position = 1;  // Zielposition (z. B. 0..0x7AC0)
-}
+message StatusReply { bool ok = 1; string message = 2; }
+message CameraStatus { bool poweredOn = 1; uint32 zoomPos = 2; }
 
-message StatusReply {
-  bool ok = 1;
-  string message = 2;
-}
-
-message CameraStatus {
-  bool poweredOn = 1;
-  uint32 zoomPos = 2;
-}
-
-// ---- Streaming / Snapshot ----
-
-message StreamH264Request {
-  int32  width   = 1;
-  int32  height  = 2;
-  int32  fps     = 3;
-  int32  bitrate = 4;   // Bit/s
-}
-
+message StreamH264Request { int32 width=1; int32 height=2; int32 fps=3; int32 bitrate=4; }
 message TsChunk { bytes data = 1; }
 
-message SnapshotRequest {
-  int32  width   = 1;
-  int32  height  = 2;
-  string format  = 3;   // "jpg" oder "png"
-}
-
-message SnapshotReply {
-  bytes image     = 1;
-  int64 timestamp = 2; // Unix-ms
-}
+message SnapshotRequest { int32 width=1; int32 height=2; string format=3; } // "jpg"/"png"
+message SnapshotReply { bytes image=1; int64 timestamp=2; }

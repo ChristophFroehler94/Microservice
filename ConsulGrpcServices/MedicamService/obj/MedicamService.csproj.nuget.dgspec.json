@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj": {}
+    "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj": {
+    "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj",
-        "projectName": "CameraService",
-        "projectPath": "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj",
+        "projectUniqueName": "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj",
+        "projectName": "MedicamService",
+        "projectPath": "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj",
         "packagesPath": "C:\\Users\\Christoph Fröhler\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\MedicamService\\obj\\",
+        "outputPath": "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -74,27 +74,42 @@
               "target": "Package",
               "version": "[2.71.0, )"
             },
+            "Grpc.HealthCheck": {
+              "target": "Package",
+              "version": "[2.71.0, )"
+            },
             "Grpc.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
               "version": "[2.72.0, )"
             },
-            "Microsoft.Extensions.Hosting.WindowsServices": {
+            "OpenTelemetry.Exporter.Prometheus.AspNetCore": {
               "target": "Package",
-              "version": "[9.0.9, )"
+              "version": "[1.9.0-alpha.1, )"
             },
-            "Microsoft.Extensions.Logging.EventLog": {
+            "OpenTelemetry.Extensions.Hosting": {
               "target": "Package",
-              "version": "[9.0.9, )"
+              "version": "[1.13.1, )"
+            },
+            "OpenTelemetry.Instrumentation.AspNetCore": {
+              "target": "Package",
+              "version": "[1.12.0, )"
+            },
+            "OpenTelemetry.Instrumentation.Process": {
+              "target": "Package",
+              "version": "[0.5.0-beta.2, )"
+            },
+            "OpenTelemetry.Instrumentation.Runtime": {
+              "target": "Package",
+              "version": "[1.12.0, )"
             },
             "System.IO.Ports": {
               "target": "Package",
-              "version": "[9.0.9, )"
+              "version": "[9.0.10, )"
             },
             "System.Management": {
               "target": "Package",
-              "version": "[9.0.9, )"
+              "version": "[9.0.10, )"
             },
             "Winton.Extensions.Configuration.Consul": {
               "target": "Package",

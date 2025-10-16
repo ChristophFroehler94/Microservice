@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj": {}
+    "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj": {
+    "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj",
+        "projectUniqueName": "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj",
         "projectName": "CameraService",
-        "projectPath": "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj",
+        "projectPath": "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\PolFlashService.csproj",
         "packagesPath": "C:\\Users\\Christoph Fröhler\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Christoph Fröhler\\Desktop\\Projekt_Mircoservice - Refactor\\ConsulGrpcServices\\PolFlashService\\obj\\",
+        "outputPath": "C:\\Users\\Christoph Fröhler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\PolFlashService\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -56,7 +56,7 @@
             },
             "Google.Protobuf": {
               "target": "Package",
-              "version": "[3.32.0, )"
+              "version": "[3.33.0, )"
             },
             "Grpc.AspNetCore": {
               "target": "Package",
@@ -77,15 +77,15 @@
             },
             "Microsoft.Extensions.Hosting.WindowsServices": {
               "target": "Package",
-              "version": "[9.0.8, )"
+              "version": "[9.0.10, )"
             },
             "Microsoft.Extensions.Logging.EventLog": {
               "target": "Package",
-              "version": "[9.0.8, )"
+              "version": "[9.0.10, )"
             },
             "System.IO.Ports": {
               "target": "Package",
-              "version": "[9.0.8, )"
+              "version": "[9.0.10, )"
             },
             "Winton.Extensions.Configuration.Consul": {
               "target": "Package",

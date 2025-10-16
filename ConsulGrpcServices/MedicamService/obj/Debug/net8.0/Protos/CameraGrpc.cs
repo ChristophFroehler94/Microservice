@@ -8,9 +8,6 @@
 using grpc = global::Grpc.Core;
 
 namespace Camera.V1 {
-  /// <summary>
-  /// Service zur Kamerasteuerung und H.264-Streaming
-  /// </summary>
   public static partial class CameraService
   {
     static readonly string __ServiceName = "camera.v1.CameraService";

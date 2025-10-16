@@ -1,0 +1,3 @@
+obj\x64\Debug\net8.0\Protos/Camera.cs \
+obj\x64\Debug\net8.0\Protos/CameraGrpc.cs: C:/Users/Christoph Fröhler/.nuget/packages/grpc.tools/2.59.0/build/native/include/google/protobuf/empty.proto\
+ Protos/camera.proto

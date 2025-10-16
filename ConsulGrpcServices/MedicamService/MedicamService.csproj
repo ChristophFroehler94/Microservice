@@ -1,32 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-	  <AssemblyName>CameraService</AssemblyName>
-	  <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Protobuf Include="Protos\camera.proto" GrpcServices="Server" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+		<PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.71.0" />
+		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.71.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.72.0" PrivateAssets="All" />
+		<PackageReference Include="Grpc.HealthCheck" Version="2.71.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.32.1" />
+		<PackageReference Include="Consul" Version="1.7.14.9" />
+		<PackageReference Include="System.Management" Version="9.0.10" />
+		<PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.4.0" />
 
-  <ItemGroup>
-    <PackageReference Include="Consul" Version="1.7.14.9" />
-    <PackageReference Include="FFMpegCore" Version="5.2.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.32.1" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
-    <PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.71.0" />
-    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.71.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.72.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.9" />
-    <PackageReference Include="System.IO.Ports" Version="9.0.9" />
-    <PackageReference Include="System.Management" Version="9.0.9" />
-    <PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.4.0" />
-  </ItemGroup>
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.13.1" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Process" Version="0.5.0-beta.2" />
+		<PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.9.0-alpha.1" />
+
+		<PackageReference Include="FFMpegCore" Version="5.2.0" />
+		<PackageReference Include="System.IO.Ports" Version="9.0.10" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Protos\camera.proto" GrpcServices="Server" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Video\" />
+	</ItemGroup>
 
 </Project>

@@ -1,10 +1,13 @@
-﻿using Grpc.Core;
-using Google.Protobuf.WellKnownTypes;
-using FotoFinder.PolFlashXE.FlashDevices;
+﻿using FotoFinder.PolFlashXE.FlashDevices;
 using FotoFinder.PolFlashXE.FlashDevices.Settings;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 
 namespace FotoFinder.PolFlashGrpc.Services
 {
+    /// <summary>
+    /// gRPC-Implementierung für PolFlash-Steuerung (v1/v2), mit Business-Outcome-Metriken.
+    /// </summary>
     public class FlashControlService : FlashControl.FlashControlBase
     {
         private readonly IFlashDevice _device;
@@ -42,11 +45,13 @@ namespace FotoFinder.PolFlashGrpc.Services
             {
                 _device.Charge();
                 _logger.LogInformation("Charge succeeded");
+                global::PolTelemetry.RecordBusiness(context.Method, true);
                 return Task.FromResult(new TaskResult { Success = true, Message = "Charged" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Charge failed");
+                global::PolTelemetry.RecordBusiness(context.Method, false);
                 return Task.FromResult(new TaskResult { Success = false, Message = ex.Message });
             }
         }
@@ -58,11 +63,13 @@ namespace FotoFinder.PolFlashGrpc.Services
             {
                 _device.Discharge();
                 _logger.LogInformation("Discharge succeeded");
+                global::PolTelemetry.RecordBusiness(context.Method, true);
                 return Task.FromResult(new TaskResult { Success = true, Message = "Discharged" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Discharge failed");
+                global::PolTelemetry.RecordBusiness(context.Method, false);
                 return Task.FromResult(new TaskResult { Success = false, Message = ex.Message });
             }
         }
@@ -82,11 +89,13 @@ namespace FotoFinder.PolFlashGrpc.Services
             {
                 v2.Trigger();
                 _logger.LogInformation("Trigger succeeded");
+                global::PolTelemetry.RecordBusiness(context.Method, true);
                 return Task.FromResult(new TaskResult { Success = true, Message = "Triggered" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Trigger failed");
+                global::PolTelemetry.RecordBusiness(context.Method, false);
                 return Task.FromResult(new TaskResult { Success = false, Message = ex.Message });
             }
         }
@@ -135,12 +144,14 @@ namespace FotoFinder.PolFlashGrpc.Services
 
                 _device.SetFlashEnergy(request.PercentageRight, request.PercentageLeft);
                 _logger.LogInformation("SetFlashEnergy succeeded");
+                global::PolTelemetry.RecordBusiness(context.Method, true);
                 return Task.FromResult(new TaskResult { Success = true, Message = "Energy set" });
             }
             catch (RpcException) { throw; }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "SetFlashEnergy failed");
+                global::PolTelemetry.RecordBusiness(context.Method, false);
                 return Task.FromResult(new TaskResult { Success = false, Message = ex.Message });
             }
         }
@@ -152,7 +163,7 @@ namespace FotoFinder.PolFlashGrpc.Services
             try
             {
                 var right = request.RightMode == SetPolarizationRequest.Types.PolarizationMode.Polarized;
-                var left = request.LeftMode  == SetPolarizationRequest.Types.PolarizationMode.Polarized;
+                var left = request.LeftMode == SetPolarizationRequest.Types.PolarizationMode.Polarized;
 
                 _device.SetPolarization(
                     right ? PolarizationModes.polarized : PolarizationModes.unpolarized,
@@ -160,11 +171,13 @@ namespace FotoFinder.PolFlashGrpc.Services
                 );
 
                 _logger.LogInformation("SetPolarization succeeded");
+                global::PolTelemetry.RecordBusiness(context.Method, true);
                 return Task.FromResult(new TaskResult { Success = true, Message = "Polarization set" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "SetPolarization failed");
+                global::PolTelemetry.RecordBusiness(context.Method, false);
                 return Task.FromResult(new TaskResult { Success = false, Message = ex.Message });
             }
         }
@@ -176,11 +189,13 @@ namespace FotoFinder.PolFlashGrpc.Services
             {
                 _device.SetLaser(request.IsActive);
                 _logger.LogInformation("SetLaser succeeded");
+                global::PolTelemetry.RecordBusiness(context.Method, true);
                 return Task.FromResult(new TaskResult { Success = true, Message = "Laser set" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "SetLaser failed");
+                global::PolTelemetry.RecordBusiness(context.Method, false);
                 return Task.FromResult(new TaskResult { Success = false, Message = ex.Message });
             }
         }

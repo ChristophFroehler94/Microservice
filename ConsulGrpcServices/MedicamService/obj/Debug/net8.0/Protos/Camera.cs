@@ -107,9 +107,6 @@ namespace Camera.V1 {
     /// <summary>Field number for the "on" field.</summary>
     public const int OnFieldNumber = 1;
     private bool on_;
-    /// <summary>
-    /// true ? Power ON, false ? Standby
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool On {
@@ -308,9 +305,6 @@ namespace Camera.V1 {
     /// <summary>Field number for the "position" field.</summary>
     public const int PositionFieldNumber = 1;
     private uint position_;
-    /// <summary>
-    /// Zielposition (z. B. 0..0x7AC0)
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint Position {
@@ -1018,9 +1012,6 @@ namespace Camera.V1 {
     /// <summary>Field number for the "bitrate" field.</summary>
     public const int BitrateFieldNumber = 4;
     private int bitrate_;
-    /// <summary>
-    /// Bit/s
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Bitrate {
@@ -1515,9 +1506,6 @@ namespace Camera.V1 {
     /// <summary>Field number for the "format" field.</summary>
     public const int FormatFieldNumber = 3;
     private string format_ = "";
-    /// <summary>
-    /// "jpg" oder "png"
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Format {
@@ -1777,9 +1765,6 @@ namespace Camera.V1 {
     /// <summary>Field number for the "timestamp" field.</summary>
     public const int TimestampFieldNumber = 2;
     private long timestamp_;
-    /// <summary>
-    /// Unix-ms
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long Timestamp {
