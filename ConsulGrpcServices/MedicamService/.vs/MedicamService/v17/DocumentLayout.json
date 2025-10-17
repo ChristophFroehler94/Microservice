@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\medicamservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\medicamservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\medicamservice\\ffmpeg.config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|solutionrelative:ffmpeg.config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\medicamservice\\diagnostics\\faultinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -55,14 +63,6 @@
       "RelativeMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|solutionrelative:medicamservice.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\medicamservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\medicamservice\\ffmpeg.config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|solutionrelative:ffmpeg.config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|c:\\users\\christoph fr\u00F6hler\\documents\\github\\microservice\\consulgrpcservices\\medicamservice\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{2499A7B1-E86C-4921-BE12-FFB13B8BE760}|MedicamService.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
@@ -74,11 +74,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 11,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "SerialPorts.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Interop\\SerialPorts.cs",
               "RelativeDocumentMoniker": "Interop\\SerialPorts.cs",
@@ -90,7 +90,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "Telemetry.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Diagnostics\\Telemetry.cs",
               "RelativeDocumentMoniker": "Diagnostics\\Telemetry.cs",
@@ -102,7 +102,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "FaultInjection.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Diagnostics\\FaultInjection.cs",
               "RelativeDocumentMoniker": "Diagnostics\\FaultInjection.cs",
@@ -110,12 +110,11 @@
               "RelativeToolTip": "Diagnostics\\FaultInjection.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T14:52:10.622Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-15T14:52:10.622Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 13,
               "Title": "VideoOptions.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Options\\VideoOptions.cs",
               "RelativeDocumentMoniker": "Options\\VideoOptions.cs",
@@ -127,7 +126,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "FFMpegCoreVideoStream.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Infrastructure\\FFMpegCoreVideoStream.cs",
               "RelativeDocumentMoniker": "Infrastructure\\FFMpegCoreVideoStream.cs",
@@ -139,7 +138,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "MedicamService.csproj",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj",
               "RelativeDocumentMoniker": "MedicamService.csproj",
@@ -151,7 +150,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 0,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -159,11 +158,12 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-11T17:34:16.107Z"
+              "WhenOpened": "2025-10-11T17:34:16.107Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "GrpcMetricsInterceptor.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Diagnostics\\GrpcMetricsInterceptor.cs",
               "RelativeDocumentMoniker": "Diagnostics\\GrpcMetricsInterceptor.cs",
@@ -175,7 +175,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "ViscaController.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Infrastructure\\ViscaController.cs",
               "RelativeDocumentMoniker": "Infrastructure\\ViscaController.cs",
@@ -187,7 +187,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "Metrics.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Diagnostics\\Metrics.cs",
               "RelativeDocumentMoniker": "Diagnostics\\Metrics.cs",
@@ -199,7 +199,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "CameraServiceImpl.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Services\\CameraServiceImpl.cs",
               "RelativeDocumentMoniker": "Services\\CameraServiceImpl.cs",
@@ -211,20 +211,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-11T13:57:44.949Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "camera.proto",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\Protos\\camera.proto",
               "RelativeDocumentMoniker": "Protos\\camera.proto",
@@ -236,7 +236,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 14,
               "Title": "MedicamService",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\MedicamService.csproj",
               "RelativeDocumentMoniker": "MedicamService.csproj",
@@ -247,7 +247,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 2,
               "Title": "ffmpeg.config.json",
               "DocumentMoniker": "C:\\Users\\Christoph Fr\u00F6hler\\Documents\\GitHub\\Microservice\\ConsulGrpcServices\\MedicamService\\ffmpeg.config.json",
               "RelativeDocumentMoniker": "ffmpeg.config.json",
@@ -255,7 +255,8 @@
               "RelativeToolTip": "ffmpeg.config.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-11T13:45:26.578Z"
+              "WhenOpened": "2025-10-11T13:45:26.578Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
